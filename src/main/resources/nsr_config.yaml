@@ -3,7 +3,7 @@ date-config:
   date-pattern: "yyyy-MM-dd"
   time-pattern: "HH:mm:ss"
   date-time-pattern: "yyyy-MM-dd HH:mm:ss"
-  zoned-date-time-pattern: ""
+  zoned-date-time-pattern: "yyyy-MM-dd HH:mm:ss Z"
 
 environments:
   - local

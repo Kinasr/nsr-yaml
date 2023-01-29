@@ -82,7 +82,7 @@ class ObjMapper {
     }
 
     private Map<String, Object> changeEnv(Map<String, Object> map) {
-        var environments = config.getEnvironments();
+        var environments = ConfigHandler.getInstance().getEnvironments();
 
         if (map == null || environments.isEmpty() || !changeEnv)
             return map;

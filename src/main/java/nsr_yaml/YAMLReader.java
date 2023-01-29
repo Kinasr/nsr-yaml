@@ -11,11 +11,11 @@ public class YAMLReader {
         this.mapper = mapper;
     }
 
-    public YAMLObject get(String key) {
+    public YAMLObj get(String key) {
         if (key == null || key.isEmpty())
             throw new InvalidKeyException("Key can't be null or empty");
 
-        return new YAMLObject(mapper.get(data, key));
+        return new YAMLObj(mapper.get(data, key));
     }
 
     public YAMLObject get() {

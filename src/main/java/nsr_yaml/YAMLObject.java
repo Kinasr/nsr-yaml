@@ -1,5 +1,8 @@
 package nsr_yaml;
 
+import exception.ParsingException;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -38,8 +41,18 @@ public class YAMLObject {
     }
 
     public <T> T as(Class<T> clazz) {
+        if (clazz.isArray())
+            throw new ParsingException("Please use asArray method instead");
+
         var asObj = to(data, clazz, null);
 
         return asObj.isCustomObj() ? toCustomObj(data, asObj.obj()) : asObj.obj();
+    }
+
+    public <T> T[] asArray(Class<T[]> clazz) {
+        var coreClazz = clazz.getComponentType();
+        var arr = toList(data, coreClazz).toArray();
+
+        return Arrays.copyOf(arr, arr.length, clazz);
     }
 }

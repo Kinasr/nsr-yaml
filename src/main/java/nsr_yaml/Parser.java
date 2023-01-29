@@ -7,18 +7,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public class Parser {
 
     private Parser() {
     }
-
-    protected static final ConfigHandler config = ConfigHandler.getInstance();
 
     protected static <T, V> AsObject<T> to(Object obj, Class<T> clazz, Class<V> vClass) {
         if (obj == null || clazz.isAssignableFrom(Object.class))
@@ -216,27 +212,23 @@ public class Parser {
         return obj != null ? String.valueOf(obj) : null;
     }
 
-    protected static Date toDate(Object obj) {
-        if (obj instanceof Date d)
-            return d;
-
-        return null;
-    }
-
     protected static LocalDate toLocalDate(Object obj, String pattern) {
-        var date = toDate(obj);
-        if (date != null)
-            return date.toInstant()
-                    .atZone(config.getDateConfigZoneId().isPresent() ? ZoneId.of(config.getDateConfigZoneId().get()) :
-                            ZoneId.systemDefault())
-                    .toLocalDate();
+        if (obj == null)
+            return null;
 
         var objStr = objToString(obj);
+        try {
+            return LocalDate.parse(objStr,
+                            DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy").withLocale(Locale.US))
+                    .plusDays(OffsetDateTime.now().getOffset().getTotalSeconds() < 0 ? 1 : 0);
+        } catch (DateTimeParseException ignore) {
+        }
+
         AtomicReference<LocalDate> localDate = new AtomicReference<>();
         if (pattern != null)
             localDate.set(LocalDate.parse(objStr, DateTimeFormatter.ofPattern(pattern)));
         else {
-            config.getDateConfigDatePattern().ifPresentOrElse(
+            ConfigHandler.getInstance().getDateConfigDatePattern().ifPresentOrElse(
                     p -> localDate.set(LocalDate.parse(objStr, DateTimeFormatter.ofPattern(p))),
                     () -> localDate.set(LocalDate.parse(objStr)));
         }
@@ -245,40 +237,44 @@ public class Parser {
     }
 
     protected static LocalTime toLocalTime(Object obj, String pattern) {
-        var date = toDate(obj);
-        if (date != null)
-            return date.toInstant()
-                    .atZone(config.getDateConfigZoneId().isPresent() ? ZoneId.of(config.getDateConfigZoneId().get()) :
-                            ZoneId.systemDefault())
-                    .toLocalTime();
+        if (obj == null)
+            return null;
 
-        var objStr = objToString(obj);
         var localTime = new AtomicReference<LocalTime>();
-        if (pattern != null)
-            localTime.set(LocalTime.parse(objStr, DateTimeFormatter.ofPattern(pattern)));
-        else {
-            config.getDateConfigTimePattern().ifPresentOrElse(
-                    p -> localTime.set(LocalTime.parse(objStr, DateTimeFormatter.ofPattern(p))),
-                    () -> localTime.set(LocalTime.parse(objStr)));
+
+        if (obj instanceof Integer objInt) {
+            localTime.set(LocalTime.ofSecondOfDay(objInt));
+        } else {
+            var objStr = objToString(obj);
+            if (pattern != null)
+                localTime.set(LocalTime.parse(objStr, DateTimeFormatter.ofPattern(pattern)));
+            else {
+                ConfigHandler.getInstance().getDateConfigTimePattern().ifPresentOrElse(
+                        p -> localTime.set(LocalTime.parse(objStr, DateTimeFormatter.ofPattern(p))),
+                        () -> localTime.set(LocalTime.parse(objStr)));
+            }
         }
 
         return localTime.get();
     }
 
     protected static LocalDateTime toLocalDateTime(Object obj, String pattern) {
-        var date = toDate(obj);
-        if (date != null)
-            return date.toInstant()
-                    .atZone(config.getDateConfigZoneId().isPresent() ? ZoneId.of(config.getDateConfigZoneId().get()) :
-                            ZoneId.systemDefault())
-                    .toLocalDateTime();
+        if (obj == null)
+            return null;
 
         var objStr = objToString(obj);
+        try {
+            return LocalDateTime.parse(objStr,
+                            DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy").withLocale(Locale.US))
+                    .minusSeconds(OffsetDateTime.now().getOffset().getTotalSeconds());
+        } catch (DateTimeParseException ignore) {
+        }
+
         AtomicReference<LocalDateTime> localDateTime = new AtomicReference<>();
         if (pattern != null)
             localDateTime.set(LocalDateTime.parse(objStr, DateTimeFormatter.ofPattern(pattern)));
         else {
-            config.getDateConfigDateTimePattern().ifPresentOrElse(
+            ConfigHandler.getInstance().getDateConfigDateTimePattern().ifPresentOrElse(
                     p -> localDateTime.set(LocalDateTime.parse(objStr, DateTimeFormatter.ofPattern(p))),
                     () -> localDateTime.set(LocalDateTime.parse(objStr)));
         }
@@ -287,28 +283,37 @@ public class Parser {
     }
 
     protected static ZonedDateTime toZonedDateTime(Object obj, String pattern) {
-        var date = toDate(obj);
-        if (date != null)
-            return date.toInstant()
-                    .atZone(config.getDateConfigZoneId().isPresent() ? ZoneId.of(config.getDateConfigZoneId().get()) :
-                            ZoneId.systemDefault());
+        if (obj == null)
+            return null;
 
-        var objStar = objToString(obj);
+        var objStr = objToString(obj);
+        try {
+            return ZonedDateTime.parse(objStr,
+                    DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy").withLocale(Locale.US));
+        } catch (DateTimeParseException ignore) {
+        }
+
         var zonedDateTime = new AtomicReference<ZonedDateTime>();
         if (pattern == null) {
-            config.getDateConfigZonedPattern().ifPresentOrElse(
-                    p -> zonedDateTime.set(ZonedDateTime.parse(objStar, DateTimeFormatter.ofPattern(p))),
-                    () -> zonedDateTime.set(ZonedDateTime.parse(objStar)));
+            ConfigHandler.getInstance().getDateConfigZonedPattern().ifPresentOrElse(
+                    p -> zonedDateTime.set(ZonedDateTime.parse(objStr, DateTimeFormatter.ofPattern(p))),
+                    () -> zonedDateTime.set(ZonedDateTime.parse(objStr)));
         } else
-            zonedDateTime.set(ZonedDateTime.parse(objStar, DateTimeFormatter.ofPattern(pattern)));
+            zonedDateTime.set(ZonedDateTime.parse(objStr, DateTimeFormatter.ofPattern(pattern)));
 
         return zonedDateTime.get();
     }
 
     protected static <T> List<T> toList(Object obj, Class<T> clazz) {
         if (obj instanceof List<?> list) {
-            return list.stream()
-                    .map(item -> to(item, clazz, null).obj()).toList();
+            var nList = new ArrayList<T>();
+            list.forEach(
+                    item -> {
+                        var asObj = to(item, clazz, null);
+                        nList.add(asObj.isCustomObj() ? toCustomObj(item, asObj.obj()) : asObj.obj());
+                    }
+            );
+            return nList;
         }
 
         throw new ParsingException("This object [" + obj + "] can't be list");
@@ -316,12 +321,17 @@ public class Parser {
 
     protected static <T> Map<String, T> toMap(Object obj, Class<T> clazz) {
         if (obj instanceof Map<?, ?> map) {
-            return map.keySet()
-                    .stream().collect(Collectors.toMap(Parser::objToString,
-                            k -> to(map.get(k), clazz, null).obj()));
+            var nMap = new HashMap<String, T>();
+            map.forEach(
+                    (k, v) -> {
+                        var asObj = to(v, clazz, null);
+                        nMap.put(k.toString(), asObj.isCustomObj() ? toCustomObj(v, asObj.obj()) : asObj.obj());
+                    }
+            );
+            return nMap;
         }
 
-        throw new ParsingException("This object [" + obj + "] can't be list");
+        throw new ParsingException("This object [" + obj + "] can't be Map");
     }
 
     protected static <T> T toCustomObj(Object data, T inst) {

@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import static nsr_yaml.Helper.isFileExist;
 
 class ConfigHandler {
-    private static ConfigHandler instance;
+    private static final ConfigHandler instance = new ConfigHandler();
     private final YAMLReader reader;
 
     private final ConfigRecord<String> dateConfigZoneID= new ConfigRecord<>("date-config.zone-id");
@@ -33,9 +33,6 @@ class ConfigHandler {
     }
 
     protected static ConfigHandler getInstance() {
-        if (instance == null)
-            instance = new ConfigHandler();
-
         return instance;
     }
 

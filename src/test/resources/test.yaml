@@ -1,1 +1,27 @@
 text: test
+number: 10
+numberD: 5.9
+boolean: true
+
+text-env@local: test local
+
+# recommend to use quotes with date and time
+date: "2020-05-10"
+date2: 2020-05-10
+time: "12:00:00"
+time2: 12:00:00
+date-time: "2020-10-01 20:22:00"
+date-time2: 2020-10-01 20:22:00
+zoned-date: "2020-05-01 10:05:00 +0200"
+zoned-date2: 2020-05-01 10:05:00 +0200
+
+n: ~
+
+person:
+  name: Ahmed
+  age: 50
+  children:
+    - name: Ali
+      age: 10
+    - name: Sara
+      age: 7
