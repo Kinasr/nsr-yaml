@@ -20,7 +20,7 @@ public class YAMLObject {
     }
 
     public String asString() {
-        return objToString(data);
+        return Parser.toString(data);
     }
 
     public List<Object> asList() {
@@ -28,6 +28,9 @@ public class YAMLObject {
     }
 
     public <T> List<T> asList(Class<T> clazz) {
+        if (clazz.isArray())
+            throw new ParsingException("Please use asArray method instead");
+
         return toList(data, clazz);
     }
 
@@ -37,6 +40,9 @@ public class YAMLObject {
     }
 
     public <T> Map<String, T> asMap(Class<T> clazz) {
+        if (clazz.isArray())
+            throw new ParsingException("Please use asArray method instead");
+
         return toMap(data, clazz);
     }
 

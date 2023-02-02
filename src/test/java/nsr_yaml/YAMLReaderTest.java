@@ -1373,40 +1373,74 @@ class YAMLReaderTest {
                     .setPets(Map.of(
                             "A", new Pet().setKind("Cat")
                     ));
-            var data = Map.of("data", person);
+            var data = Map.of(
+                    "data", Map.of(
+                            "name", "Ahmed",
+                            "age", 50,
+                            "pets", Map.of(
+                                    "A", Map.of("kind", "Cat")
+                            )
+                    )
+            );
 
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("data")
                     .as(Person.class))
                     .isInstanceOf(Person.class)
-                    .isEqualTo(data);
+                    .isEqualTo(person);
+        }
+
+        @Test
+        void getArrayCustomObject() {
+            var person = List.of(
+                    new Person().setName("Ahmed").setAge(50),
+                    new Person().setName("Mohamed").setAge(30)
+            );
+            var data = Map.of(
+                    "data", List.of(
+                            Map.of("name", "Ahmed", "age", 50),
+                            Map.of("name", "Mohamed", "age", 30)
+                    )
+            );
+
+            assertThat(new YAMLReader(data, new ObjMapper(true)).get("data")
+                    .asArray(Person[].class))
+                    .isEqualTo(person.toArray());
         }
 
         @Test
         void getListCustomObject() {
-            var persons = List.of(
+            var person = List.of(
                     new Person().setName("Ahmed").setAge(50),
                     new Person().setName("Mohamed").setAge(30)
             );
-            var data = Map.of("data", persons);
+            var data = Map.of(
+                    "data", List.of(
+                            Map.of("name", "Ahmed", "age", 50),
+                            Map.of("name", "Mohamed", "age", 30)
+                    )
+            );
 
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("data")
-                    .as(Person.class))
-                    .isInstanceOf(Person.class)
-                    .isEqualTo(data);
+                    .asList(Person.class))
+                    .isEqualTo(person);
         }
 
         @Test
         void getMapCustomObject() {
-            var persons = Map.of(
+            var person = Map.of(
                     "A", new Person().setName("Ahmed").setAge(50),
                     "B", new Person().setName("Mohamed").setAge(30)
             );
-            var data = Map.of("data", persons);
+            var data = Map.of(
+                    "data", Map.of(
+                            "A", Map.of("name", "Ahmed", "age", 50),
+                            "B", Map.of("name", "Mohamed", "age", 30)
+                    )
+            );
 
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("data")
-                    .as(Person.class))
-                    .isInstanceOf(Person.class)
-                    .isEqualTo(data);
+                    .asMap(Person.class))
+                    .isEqualTo(person);
         }
     }
 

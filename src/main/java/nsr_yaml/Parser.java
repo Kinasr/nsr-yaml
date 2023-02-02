@@ -10,30 +10,55 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 public class Parser {
+    private static final Map<Class<?>, Function<Object, ?>> parsingMap = new HashMap<>();
+
+    static {
+        parsingMap.put(Object.class, obj -> obj);
+        parsingMap.put(Boolean.class, Parser::toBoolean);
+        parsingMap.put(Byte.class, Parser::toByte);
+        parsingMap.put(Short.class, Parser::toShort);
+        parsingMap.put(Integer.class, Parser::toInteger);
+        parsingMap.put(Long.class, Parser::toLong);
+        parsingMap.put(Float.class, Parser::toFloat);
+        parsingMap.put(Double.class, Parser:: toDouble);
+        parsingMap.put(String.class, Parser::toString);
+        parsingMap.put(LocalDate.class, obj -> toLocalDate(obj, null));
+        parsingMap.put(LocalTime.class, obj -> toLocalTime(obj, null));
+        parsingMap.put(LocalDateTime.class, obj -> toLocalDateTime(obj, null));
+        parsingMap.put(ZonedDateTime.class, obj -> toZonedDateTime(obj, null));
+    }
 
     private Parser() {
     }
 
     protected static <T, V> AsObject<T> to(Object obj, Class<T> clazz, Class<V> vClass) {
-        if (obj == null || clazz.isAssignableFrom(Object.class))
-            return new AsObject<>(clazz.cast(obj), false);
+        if (obj == null)
+            return new AsObject<>(null, false);
 
-        T value = objToPrimitive(obj, clazz);
-        if (value != null)
-            return new AsObject<>(value, false);
+        if (parsingMap.containsKey(clazz))
+            return new AsObject<>(clazz.cast(parsingMap.get(clazz).apply(obj)), false);
 
-        // to date
-        if (clazz.isAssignableFrom(LocalDate.class))
-            return new AsObject<>(clazz.cast(toLocalDate(obj, null)), false);
-        else if (clazz.isAssignableFrom(LocalTime.class))
-            return new AsObject<>(clazz.cast(toLocalTime(obj, null)), false);
-        else if (clazz.isAssignableFrom(LocalDateTime.class))
-            return new AsObject<>(clazz.cast(toLocalDateTime(obj, null)), false);
-        else if (clazz.isAssignableFrom(ZonedDateTime.class))
-            return new AsObject<>(clazz.cast(toZonedDateTime(obj, null)), false);
+//        if (obj == null || clazz.isAssignableFrom(Object.class))
+//            return new AsObject<>(clazz.cast(obj), false);
+//
+//        T value = objToPrimitive(obj, clazz);
+//        if (value != null)
+//            return new AsObject<>(value, false);
+//
+//        // to date
+//        if (clazz.isAssignableFrom(LocalDate.class))
+//            return new AsObject<>(clazz.cast(toLocalDate(obj, null)), false);
+//        else if (clazz.isAssignableFrom(LocalTime.class))
+//            return new AsObject<>(clazz.cast(toLocalTime(obj, null)), false);
+//        else if (clazz.isAssignableFrom(LocalDateTime.class))
+//            return new AsObject<>(clazz.cast(toLocalDateTime(obj, null)), false);
+//        else if (clazz.isAssignableFrom(ZonedDateTime.class))
+//            return new AsObject<>(clazz.cast(toZonedDateTime(obj, null)), false);
 
+        T value;
         var c = vClass != null ? vClass : Object.class;
         // to list
         if (clazz.isAssignableFrom(List.class))
@@ -49,8 +74,6 @@ public class Parser {
                  NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-
-        // throwing exception
 
         return new AsObject<>(value, true);
     }
@@ -208,7 +231,7 @@ public class Parser {
     /**
      * Parsing {@link Object} to {@link String}
      */
-    protected static String objToString(Object obj) {
+    protected static String toString(Object obj) {
         return obj != null ? String.valueOf(obj) : null;
     }
 
@@ -216,7 +239,7 @@ public class Parser {
         if (obj == null)
             return null;
 
-        var objStr = objToString(obj);
+        var objStr = toString(obj);
         try {
             return LocalDate.parse(objStr,
                             DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy").withLocale(Locale.US))
@@ -245,7 +268,7 @@ public class Parser {
         if (obj instanceof Integer objInt) {
             localTime.set(LocalTime.ofSecondOfDay(objInt));
         } else {
-            var objStr = objToString(obj);
+            var objStr = toString(obj);
             if (pattern != null)
                 localTime.set(LocalTime.parse(objStr, DateTimeFormatter.ofPattern(pattern)));
             else {
@@ -262,7 +285,7 @@ public class Parser {
         if (obj == null)
             return null;
 
-        var objStr = objToString(obj);
+        var objStr = toString(obj);
         try {
             return LocalDateTime.parse(objStr,
                             DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy").withLocale(Locale.US))
@@ -286,7 +309,7 @@ public class Parser {
         if (obj == null)
             return null;
 
-        var objStr = objToString(obj);
+        var objStr = toString(obj);
         try {
             return ZonedDateTime.parse(objStr,
                     DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy").withLocale(Locale.US));
