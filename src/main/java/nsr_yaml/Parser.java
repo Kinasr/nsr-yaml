@@ -34,38 +34,24 @@ public class Parser {
     private Parser() {
     }
 
-    protected static <T, V> AsObject<T> to(Object obj, Class<T> clazz, Class<V> vClass) {
+    protected static <T, V> T to(Object obj, Class<T> clazz, Class<V> vClass) {
         if (obj == null)
-            return new AsObject<>(null, false);
+            return null;
 
         if (parsingMap.containsKey(clazz))
-            return new AsObject<>(clazz.cast(parsingMap.get(clazz).apply(obj)), false);
-
-//        if (obj == null || clazz.isAssignableFrom(Object.class))
-//            return new AsObject<>(clazz.cast(obj), false);
-//
-//        T value = objToPrimitive(obj, clazz);
-//        if (value != null)
-//            return new AsObject<>(value, false);
-//
-//        // to date
-//        if (clazz.isAssignableFrom(LocalDate.class))
-//            return new AsObject<>(clazz.cast(toLocalDate(obj, null)), false);
-//        else if (clazz.isAssignableFrom(LocalTime.class))
-//            return new AsObject<>(clazz.cast(toLocalTime(obj, null)), false);
-//        else if (clazz.isAssignableFrom(LocalDateTime.class))
-//            return new AsObject<>(clazz.cast(toLocalDateTime(obj, null)), false);
-//        else if (clazz.isAssignableFrom(ZonedDateTime.class))
-//            return new AsObject<>(clazz.cast(toZonedDateTime(obj, null)), false);
+            return clazz.cast(parsingMap.get(clazz).apply(obj));
 
         T value;
         var c = vClass != null ? vClass : Object.class;
         // to list
         if (clazz.isAssignableFrom(List.class))
-            return new AsObject<>(clazz.cast(toList(obj, c)), false);
+            return clazz.cast(toList(obj, c));
         // to map
         if (clazz.isAssignableFrom(Map.class))
-            return new AsObject<>(clazz.cast(toMap(obj, c)), false);
+            return clazz.cast(toMap(obj, c));
+
+        if (clazz.isEnum())
+            return clazz.cast(toEnum(obj, clazz));
 
         // to custom object
         try {
@@ -75,7 +61,7 @@ public class Parser {
             throw new RuntimeException(e);
         }
 
-        return new AsObject<>(value, true);
+        return toCustomObj(obj, value);
     }
 
     /**
@@ -331,10 +317,7 @@ public class Parser {
         if (obj instanceof List<?> list) {
             var nList = new ArrayList<T>();
             list.forEach(
-                    item -> {
-                        var asObj = to(item, clazz, null);
-                        nList.add(asObj.isCustomObj() ? toCustomObj(item, asObj.obj()) : asObj.obj());
-                    }
+                    item -> nList.add(to(item, clazz, null))
             );
             return nList;
         }
@@ -346,10 +329,7 @@ public class Parser {
         if (obj instanceof Map<?, ?> map) {
             var nMap = new HashMap<String, T>();
             map.forEach(
-                    (k, v) -> {
-                        var asObj = to(v, clazz, null);
-                        nMap.put(k.toString(), asObj.isCustomObj() ? toCustomObj(v, asObj.obj()) : asObj.obj());
-                    }
+                    (k, v) -> nMap.put(k.toString(), to(v, clazz, null))
             );
             return nMap;
         }
@@ -368,13 +348,7 @@ public class Parser {
             var type = field.getType();
 
             if (map.containsKey(name)) {
-                var asObj = to(map.get(name), type, getListMapArgument(field, type));
-
-                Object value;
-                if (asObj.isCustomObj())
-                    value = toCustomObj(map.get(name), asObj.obj());
-                else
-                    value = asObj.obj();
+                var value = to(map.get(name), type, getListMapArgument(field, type));
 
                 try {
                     field.set(inst, value);
@@ -385,6 +359,16 @@ public class Parser {
         }
 
         return inst;
+    }
+
+    private static <T> T toEnum(Object obj, Class<T> clazz) {
+        try {
+            var x = clazz.getMethod("valueOf", String.class)
+                    .invoke(null, toString(obj));
+            return clazz.cast(x);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static <T> T objToPrimitive(Object obj, Class<T> clazz) {

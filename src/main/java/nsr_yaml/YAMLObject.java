@@ -50,9 +50,7 @@ public class YAMLObject {
         if (clazz.isArray())
             throw new ParsingException("Please use asArray method instead");
 
-        var asObj = to(data, clazz, null);
-
-        return asObj.isCustomObj() ? toCustomObj(data, asObj.obj()) : asObj.obj();
+        return to(data, clazz, null);
     }
 
     public <T> T[] asArray(Class<T[]> clazz) {

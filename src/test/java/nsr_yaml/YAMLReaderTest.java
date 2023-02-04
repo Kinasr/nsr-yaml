@@ -1447,4 +1447,13 @@ class YAMLReaderTest {
     @Nested
     class Environments {
     }
+
+
+    @Test
+    void ttt() {
+        var x = new YAMLReader(Map.of("gender", "MALE"), new ObjMapper(false)).get("gender")
+                .as(Gender.class);
+
+        System.out.println(x);
+    }
 }
