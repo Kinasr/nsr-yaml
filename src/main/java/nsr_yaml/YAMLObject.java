@@ -2,7 +2,6 @@ package nsr_yaml;
 
 import exception.ParsingException;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +27,7 @@ public class YAMLObject {
     }
 
     public <T> List<T> asList(Class<T> clazz) {
-        if (clazz.isArray())
-            throw new ParsingException("Please use asArray method instead");
-
+        validateClazz(clazz);
         return toList(data, clazz);
     }
 
@@ -40,23 +37,26 @@ public class YAMLObject {
     }
 
     public <T> Map<String, T> asMap(Class<T> clazz) {
-        if (clazz.isArray())
-            throw new ParsingException("Please use asArray method instead");
-
+        validateClazz(clazz);
         return toMap(data, clazz);
     }
 
     public <T> T as(Class<T> clazz) {
-        if (clazz.isArray())
-            throw new ParsingException("Please use asArray method instead");
-
+        validateClazz(clazz);
         return to(data, clazz, null);
     }
 
-    public <T> T[] asArray(Class<T[]> clazz) {
-        var coreClazz = clazz.getComponentType();
-        var arr = toList(data, coreClazz).toArray();
+    private <T> void validateClazz(Class<T> clazz) {
+        var errorMsg = "";
+        if (clazz.isInterface() && !clazz.isAssignableFrom(List.class) &&
+                !clazz.isAssignableFrom(Map.class))
+            errorMsg = "Interfaces can not be initialized";
+        else if (clazz.isRecord())
+            errorMsg = "Records are not supported";
+        else if (clazz.isArray())
+            validateClazz(clazz.getComponentType());
 
-        return Arrays.copyOf(arr, arr.length, clazz);
+        if (!errorMsg.isEmpty())
+            throw new ParsingException(errorMsg);
     }
 }

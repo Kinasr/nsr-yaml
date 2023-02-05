@@ -1,11 +1,16 @@
 package nsr_yaml;
 
+import exception.InvalidKeyException;
+import exception.ParsingException;
 import helper.Gender;
+import helper.NotContainsNoArgumentsConstructor;
 import helper.Person;
 import helper.Pet;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -18,7 +23,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
@@ -133,13 +138,17 @@ class YAMLReaderTest {
             }
 
             @Test
-            @SuppressWarnings("unchecked")
             void getAllAsSet() {
                 var data = List.of("object", "object");
 
-                assertThat(new YAMLReader(data, new ObjMapper(true)).get().as(HashSet.class))
-                        .isInstanceOf(HashSet.class)
-                        .isEqualTo(data);
+                var thrown = catchThrowableOfType(
+                        () -> new YAMLReader(data, new ObjMapper(true)).get()
+                                .as(HashSet.class),
+                        ParsingException.class
+                );
+
+                assertThat(thrown.getMessage())
+                        .isEqualTo("Can't parse [[object, object]] to be class java.util.HashSet");
             }
 
             @Test
@@ -214,6 +223,21 @@ class YAMLReaderTest {
         @Test
         void getMapObject() {
             var d = Map.of("o1", "obj1", "o2", "obj2");
+            var data = Map.of(
+                    "data", d
+            );
+
+            assertThat(new YAMLReader(data, new ObjMapper(true)).get("data").asMap())
+                    .isInstanceOf(Object.class)
+                    .isEqualTo(d);
+        }
+
+        @Test
+        void getMapObjectArray() {
+            var d = Map.of(
+                    "o1", new Object[]{"obj11", "obj12"},
+                    "o2", new Object[]{"obj21", "obj22"}
+            );
             var data = Map.of(
                     "data", d
             );
@@ -362,6 +386,30 @@ class YAMLReaderTest {
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("null").asBoolean() == null)
                     .isTrue();
         }
+
+        @Test
+        void getStringAsBoolean() {
+            var data = Map.of(
+                    "boolean", "test"
+            );
+
+            assertThat(new YAMLReader(data, new ObjMapper(true)).get("boolean").asBoolean())
+                    .isInstanceOf(Boolean.class)
+                    .isFalse();
+        }
+
+        @Test
+        void getNumberAsBoolean() {
+            var data = Map.of(
+                    "boolean", 10
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("boolean").asBoolean(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [10] to be Boolean");
+        }
         // endregion
 
         // region Byte
@@ -399,6 +447,17 @@ class YAMLReaderTest {
         }
 
         @Test
+        void getStringByte() {
+            var data = Map.of(
+                    "number", "10"
+            );
+
+            assertThat(new YAMLReader(data, new ObjMapper(true)).get("number").asByte())
+                    .isInstanceOf(Byte.class)
+                    .isEqualTo((byte) 10);
+        }
+
+        @Test
         void getListByte() {
             var d = List.of((byte) 0, (byte) 10);
             var data = Map.of(
@@ -427,6 +486,32 @@ class YAMLReaderTest {
 
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("null").asByte() == null)
                     .isTrue();
+        }
+
+        @Test
+        void getInvalidStringByte() {
+            var data = Map.of(
+                    "number", "ttt"
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asByte(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [ttt] to be Byte");
+        }
+
+        @Test
+        void getMapAsByte() {
+            var data = Map.of(
+                    "number", Map.of("A", "a")
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asByte(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [{A=a}] to be Byte");
         }
         // endregion
 
@@ -465,6 +550,17 @@ class YAMLReaderTest {
         }
 
         @Test
+        void getStringShort() {
+            var data = Map.of(
+                    "number", "100"
+            );
+
+            assertThat(new YAMLReader(data, new ObjMapper(true)).get("number").asShort())
+                    .isInstanceOf(Short.class)
+                    .isEqualTo((short) 100);
+        }
+
+        @Test
         void getListShort() {
             var d = List.of((short) 10, (short) 20);
             var data = Map.of(
@@ -493,6 +589,32 @@ class YAMLReaderTest {
 
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("null").asShort() == null)
                     .isTrue();
+        }
+
+        @Test
+        void getInvalidStringShort() {
+            var data = Map.of(
+                    "number", "ttt"
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asShort(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [ttt] to be Short");
+        }
+
+        @Test
+        void getMapAsShort() {
+            var data = Map.of(
+                    "number", Map.of("A", "a")
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asShort(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [{A=a}] to be Short");
         }
         // endregion
 
@@ -529,6 +651,17 @@ class YAMLReaderTest {
                     .isInstanceOf(Integer.class)
                     .isEqualTo(9946);
         }
+        
+        @Test
+        void getStringInteger() {
+            var data = Map.of(
+                    "number", "100"
+            );
+
+            assertThat(new YAMLReader(data, new ObjMapper(true)).get("number").asInteger())
+                    .isInstanceOf(Integer.class)
+                    .isEqualTo(100);
+        }
 
         @Test
         void getListInteger() {
@@ -559,6 +692,32 @@ class YAMLReaderTest {
 
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("null").asInteger() == null)
                     .isTrue();
+        }
+
+        @Test
+        void getInvalidStringInteger() {
+            var data = Map.of(
+                    "number", "ttt"
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asInteger(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [ttt] to be Integer");
+        }
+
+        @Test
+        void getMapAsInteger() {
+            var data = Map.of(
+                    "number", Map.of("A", "a")
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asInteger(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [{A=a}] to be Integer");
         }
         // endregion
 
@@ -595,6 +754,17 @@ class YAMLReaderTest {
                     .isInstanceOf(Long.class)
                     .isEqualTo(9946);
         }
+        
+        @Test
+        void getStringLong() {
+            var data = Map.of(
+                    "number", "100"
+            );
+
+            assertThat(new YAMLReader(data, new ObjMapper(true)).get("number").asLong())
+                    .isInstanceOf(Long.class)
+                    .isEqualTo(100);
+        }
 
         @Test
         void getListLong() {
@@ -625,6 +795,32 @@ class YAMLReaderTest {
 
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("null").asLong() == null)
                     .isTrue();
+        }
+
+        @Test
+        void getInvalidStringLong() {
+            var data = Map.of(
+                    "number", "ttt"
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asLong(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [ttt] to be Long");
+        }
+
+        @Test
+        void getMapAsLong() {
+            var data = Map.of(
+                    "number", Map.of("A", "a")
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asLong(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [{A=a}] to be Long");
         }
         // endregion
 
@@ -685,6 +881,17 @@ class YAMLReaderTest {
         }
 
         @Test
+        void getStringFloat() {
+            var data = Map.of(
+                    "number", "5.3"
+            );
+
+            assertThat(new YAMLReader(data, new ObjMapper(true)).get("number").asFloat())
+                    .isInstanceOf(Float.class)
+                    .isEqualTo(5.3f);
+        }
+
+        @Test
         void getListFloat() {
             var d = List.of((float) 10.5, (float) 20.9);
             var data = Map.of(
@@ -713,6 +920,32 @@ class YAMLReaderTest {
 
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("null").asFloat() == null)
                     .isTrue();
+        }
+
+        @Test
+        void getInvalidStringFloat() {
+            var data = Map.of(
+                    "number", "ttt"
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asFloat(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [ttt] to be Float");
+        }
+
+        @Test
+        void getMapAsFloat() {
+            var data = Map.of(
+                    "number", Map.of("A", "a")
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asFloat(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [{A=a}] to be Float");
         }
         // endregion
 
@@ -773,6 +1006,17 @@ class YAMLReaderTest {
         }
 
         @Test
+        void getStringDouble() {
+            var data = Map.of(
+                    "number", "5.3"
+            );
+
+            assertThat(new YAMLReader(data, new ObjMapper(true)).get("number").asDouble())
+                    .isInstanceOf(Double.class)
+                    .isEqualTo(5.3);
+        }
+
+        @Test
         void getListDouble() {
             var d = List.of((double) 10, (double) 20);
             var data = Map.of(
@@ -801,6 +1045,32 @@ class YAMLReaderTest {
 
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("null").asDouble() == null)
                     .isTrue();
+        }
+
+        @Test
+        void getInvalidStringDouble() {
+            var data = Map.of(
+                    "number", "ttt"
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asDouble(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [ttt] to be Double");
+        }
+
+        @Test
+        void getMapAsDouble() {
+            var data = Map.of(
+                    "number", Map.of("A", "a")
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asDouble(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't parse [{A=a}] to be Double");
         }
         // endregion
 
@@ -831,7 +1101,7 @@ class YAMLReaderTest {
         }
 
         @Test
-        void getLocalDateWithCustomPatter() {
+        void getLocalDateWithCustomPattern() {
             var d = "2020/15/02";
             var p = "yyyy/dd/MM";
 
@@ -842,6 +1112,29 @@ class YAMLReaderTest {
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("date").asLocalDate(p))
                     .isInstanceOf(LocalDate.class)
                     .isEqualTo(LocalDate.parse(d, DateTimeFormatter.ofPattern(p)));
+        }
+
+        @Test
+        void getLocalDateWithDefault() {
+            var d = "2020-05-02";
+
+            var data = Map.of(
+                    "date", d
+            );
+
+            MockedStatic<ConfigHandler> config = Mockito.mockStatic(ConfigHandler.class);
+            config.when(ConfigHandler::getInstance)
+                    .thenReturn(configHandler);
+            doReturn(Optional.empty())
+                    .when(configHandler)
+                    .getDateConfigDatePattern();
+
+            var date = new YAMLReader(data, new ObjMapper(true)).get("date").asLocalDate();
+            config.close();
+
+            assertThat(date)
+                    .isInstanceOf(LocalDate.class)
+                    .isEqualTo(LocalDate.parse(d));
         }
 
         @Test
@@ -959,6 +1252,29 @@ class YAMLReaderTest {
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("time").asLocalTime(p))
                     .isInstanceOf(LocalTime.class)
                     .isEqualTo(LocalTime.parse(t, DateTimeFormatter.ofPattern(p)));
+        }
+
+        @Test
+        void getLocalTimeWithDefault() {
+            var t = "20:10:10";
+
+            var data = Map.of(
+                    "date", t
+            );
+
+            MockedStatic<ConfigHandler> config = Mockito.mockStatic(ConfigHandler.class);
+            config.when(ConfigHandler::getInstance)
+                    .thenReturn(configHandler);
+            doReturn(Optional.empty())
+                    .when(configHandler)
+                    .getDateConfigTimePattern();
+
+            var time = new YAMLReader(data, new ObjMapper(true)).get("date").asLocalTime();
+            config.close();
+
+            assertThat(time)
+                    .isInstanceOf(LocalTime.class)
+                    .isEqualTo(LocalTime.parse(t));
         }
 
         @Test
@@ -1082,6 +1398,29 @@ class YAMLReaderTest {
         }
 
         @Test
+        void getLocalDateTimeWithDefault() {
+            var d = "2023-02-05T14:26:11.20";
+
+            var data = Map.of(
+                    "date", d
+            );
+
+            MockedStatic<ConfigHandler> config = Mockito.mockStatic(ConfigHandler.class);
+            config.when(ConfigHandler::getInstance)
+                    .thenReturn(configHandler);
+            doReturn(Optional.empty())
+                    .when(configHandler)
+                    .getDateConfigDateTimePattern();
+
+            var date = new YAMLReader(data, new ObjMapper(true)).get("date").asLocalDateTime();
+            config.close();
+
+            assertThat(date)
+                    .isInstanceOf(LocalDateTime.class)
+                    .isEqualTo(LocalDateTime.parse(d));
+        }
+
+        @Test
         void getListOfLocalDateTime() {
             var p = "yyyy/dd/MM HH:mm:ss";
             var d0 = "2020/05/10 10:20:01";
@@ -1202,6 +1541,29 @@ class YAMLReaderTest {
         }
 
         @Test
+        void getZonedDateTimeWithDefault() {
+            var d = "2023-02-05T14:28:46.917910500+02:00[Africa/Cairo]";
+
+            var data = Map.of(
+                    "date", d
+            );
+
+            MockedStatic<ConfigHandler> config = Mockito.mockStatic(ConfigHandler.class);
+            config.when(ConfigHandler::getInstance)
+                    .thenReturn(configHandler);
+            doReturn(Optional.empty())
+                    .when(configHandler)
+                    .getDateConfigZonedPattern();
+
+            var date = new YAMLReader(data, new ObjMapper(true)).get("date").asZonedDateTime();
+            config.close();
+
+            assertThat(date)
+                    .isInstanceOf(ZonedDateTime.class)
+                    .isEqualTo(ZonedDateTime.parse(d));
+        }
+
+        @Test
         void getListOfZonedDateTime() {
             var p = "yyyy/dd/MM HH:mm:ss Z";
             var d0 = "2020/15/02 20:10:00 +0200";
@@ -1278,6 +1640,42 @@ class YAMLReaderTest {
                     .isTrue();
         }
         // endregion
+
+        @Test
+        void getNotExistedKey() {
+            var data = Map.of(
+                    "text", "test"
+            );
+
+            assertThatThrownBy(() -> new YAMLReader(data, new ObjMapper(true)).get("text0").asObject())
+                    .isInstanceOf(InvalidKeyException.class);
+        }
+
+        @Test
+        void getStringAsList() {
+            var data = Map.of(
+                    "number", "test"
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asList(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("This object [test] can't be list");
+        }
+
+        @Test
+        void getStringAsMap() {
+            var data = Map.of(
+                    "number", "test"
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("number").asMap(),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("This object [test] can't be Map");
+        }
     }
 
     @Nested
@@ -1383,7 +1781,7 @@ class YAMLReaderTest {
                     )
             );
 
-            assertThat(new YAMLReader(data, new ObjMapper(true)).get("data")
+            assertThat(new YAMLReader(data, new ObjMapper(false)).get("data")
                     .as(Person.class))
                     .isInstanceOf(Person.class)
                     .isEqualTo(person);
@@ -1403,7 +1801,7 @@ class YAMLReaderTest {
             );
 
             assertThat(new YAMLReader(data, new ObjMapper(true)).get("data")
-                    .asArray(Person[].class))
+                    .as(Person[].class))
                     .isEqualTo(person.toArray());
         }
 
@@ -1442,18 +1840,114 @@ class YAMLReaderTest {
                     .asMap(Person.class))
                     .isEqualTo(person);
         }
+
+        @Test
+        void getCustomObjectWithAlias() {
+            var person = new Person()
+                    .setName("Ahmed")
+                    .setNickName("Abo Salah")
+                    .setAge(50);
+            var data = Map.of(
+                    "data", Map.of(
+                            "name", "Ahmed",
+                            "nick-name", "Abo Salah",
+                            "age", 50
+                    )
+            );
+
+            assertThat(new YAMLReader(data, new ObjMapper(true)).get("data")
+                    .as(Person.class))
+                    .isInstanceOf(Person.class)
+                    .isEqualTo(person);
+        }
+
+        @Test
+        void getCustomObjectWithOneWrongParsing() {
+            var data = Map.of(
+                    "data", Map.of(
+                            "name", "Ahmed",
+                            "age", "test"
+                    )
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("data")
+                            .as(Person.class),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't set this value [test] for this field [age java.lang.Integer]");
+        }
+
+        @Test
+        void getCustomObjectForClassNotContainsNoArgumentsConstructor() {
+            var data = Map.of(
+                    "data", Map.of(
+                            "name", "Ahmed",
+                            "age", "test"
+                    )
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("data")
+                            .as(NotContainsNoArgumentsConstructor.class),
+                    ParsingException.class);
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Can't create an instance of [helper.NotContainsNoArgumentsConstructor]," +
+                            " please make sure that this class has no-arguments constructor");
+        }
+
+        @Test
+        void getCustomObjectWithPrimitiveField() {
+            var data = Map.of(
+                    "data", Map.of(
+                            "kind", "Cat",
+                            "numOfLegs", 4
+                    )
+            );
+
+            var thrown = catchThrowableOfType(
+                    () -> new YAMLReader(data, new ObjMapper(true)).get("data").as(Pet.class),
+                    ParsingException.class
+            );
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Primitive types are not supported please use wrapper classes instead." +
+                            " at [numOfLegs int]");
+        }
+    }
+
+    @Nested
+    class Enum {
+        @Test
+        void getEnum() {
+            assertThat(new YAMLReader(Map.of("gender", "MALE"), new ObjMapper(false))
+                    .get("gender").as(Gender.class))
+                    .isEqualTo(Gender.MALE);
+        }
+
+        @Test
+        void getEnumThatNotExisted() {
+            var thrown = catchThrowableOfType(() ->
+                            new YAMLReader(Map.of("gender", "MMM"), new ObjMapper(false))
+                                    .get("gender").as(Gender.class),
+                    ParsingException.class);
+
+            assertThat(thrown.getMessage())
+                    .isEqualTo("Ensure that this Enum [helper.Gender] contains this value [MMM]");
+        }
     }
 
     @Nested
     class Environments {
     }
 
-
-    @Test
-    void ttt() {
-        var x = new YAMLReader(Map.of("gender", "MALE"), new ObjMapper(false)).get("gender")
-                .as(Gender.class);
-
-        System.out.println(x);
+    @ParameterizedTest
+    @NullAndEmptySource
+    void getWithNullKey(String key) {
+        var thrown = catchThrowableOfType(
+                () -> new YAMLReader("", new ObjMapper(false)).get(key),
+                InvalidKeyException.class
+        );
+        assertThat(thrown.getMessage())
+                .isEqualTo("Key can't be null or empty");
     }
 }

@@ -4,9 +4,28 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>io.github.kinasr</groupId>
     <artifactId>nsr-yaml</artifactId>
     <version>0.1.0-SNAPSHOT</version>
+    <name>NSR-YAML</name>
+    <description>A library provides easy and customizable ways to read data from YAML files.</description>
+    <url>https://github.com/Kinasr/nsr-yaml</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Khaled Nasr</name>
+            <email>kh.ibrahim.nasr@gmail.com</email>
+            <organization>io.github.kinasr</organization>
+            <organizationUrl>https://github.com/Kinasr/</organizationUrl>
+        </developer>
+    </developers>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -49,6 +68,7 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>3.24.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

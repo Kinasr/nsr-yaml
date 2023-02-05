@@ -1,5 +1,7 @@
 package helper;
 
+import annotation.Alias;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +9,8 @@ import java.util.Objects;
 
 public class Person {
     private String name;
+    @Alias("nick-name")
+    private String nickName;
     private Integer age;
     private LocalDate dateOfBirth;
     private Gender gender;
@@ -70,10 +74,20 @@ public class Person {
         return this;
     }
 
+    public String getNickName() {
+        return nickName;
+    }
+
+    public Person setNickName(String nickName) {
+        this.nickName = nickName;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Person{" +
                 "name='" + name + '\'' +
+                ", nickName='" + nickName + '\'' +
                 ", age=" + age +
                 ", dateOfBirth=" + dateOfBirth +
                 ", gender=" + gender +
@@ -86,17 +100,27 @@ public class Person {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Person person = (Person) o;
-        return Objects.equals(name, person.name) &&
-                Objects.equals(age, person.age) &&
-                Objects.equals(dateOfBirth, person.dateOfBirth) &&
-                gender == person.gender &&
-                Objects.equals(children, person.children) &&
-                Objects.equals(pets, person.pets);
+
+        if (!Objects.equals(name, person.name)) return false;
+        if (!Objects.equals(nickName, person.nickName)) return false;
+        if (!Objects.equals(age, person.age)) return false;
+        if (!Objects.equals(dateOfBirth, person.dateOfBirth)) return false;
+        if (gender != person.gender) return false;
+        if (!Objects.equals(children, person.children)) return false;
+        return Objects.equals(pets, person.pets);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, age, dateOfBirth, gender, children, pets);
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (nickName != null ? nickName.hashCode() : 0);
+        result = 31 * result + (age != null ? age.hashCode() : 0);
+        result = 31 * result + (dateOfBirth != null ? dateOfBirth.hashCode() : 0);
+        result = 31 * result + (gender != null ? gender.hashCode() : 0);
+        result = 31 * result + (children != null ? children.hashCode() : 0);
+        result = 31 * result + (pets != null ? pets.hashCode() : 0);
+        return result;
     }
 }

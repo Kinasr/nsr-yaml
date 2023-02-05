@@ -1,5 +1,6 @@
 package nsr_yaml;
 
+import annotation.Alias;
 import exception.ParsingException;
 
 import java.lang.reflect.Field;
@@ -23,7 +24,7 @@ public class Parser {
         parsingMap.put(Integer.class, Parser::toInteger);
         parsingMap.put(Long.class, Parser::toLong);
         parsingMap.put(Float.class, Parser::toFloat);
-        parsingMap.put(Double.class, Parser:: toDouble);
+        parsingMap.put(Double.class, Parser::toDouble);
         parsingMap.put(String.class, Parser::toString);
         parsingMap.put(LocalDate.class, obj -> toLocalDate(obj, null));
         parsingMap.put(LocalTime.class, obj -> toLocalTime(obj, null));
@@ -34,34 +35,35 @@ public class Parser {
     private Parser() {
     }
 
-    protected static <T, V> T to(Object obj, Class<T> clazz, Class<V> vClass) {
+    @SuppressWarnings("unchecked")
+    protected static <T, V> T to(Object obj, Class<T> clazz, Class<V> clazz2) {
         if (obj == null)
             return null;
 
+        Object value;
+        var listMapComponentType = clazz2 != null ? clazz2 : Object.class;
+
         if (parsingMap.containsKey(clazz))
-            return clazz.cast(parsingMap.get(clazz).apply(obj));
-
-        T value;
-        var c = vClass != null ? vClass : Object.class;
-        // to list
-        if (clazz.isAssignableFrom(List.class))
-            return clazz.cast(toList(obj, c));
-        // to map
-        if (clazz.isAssignableFrom(Map.class))
-            return clazz.cast(toMap(obj, c));
-
-        if (clazz.isEnum())
-            return clazz.cast(toEnum(obj, clazz));
-
-        // to custom object
-        try {
-            value = clazz.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                 NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            value  = parsingMap.get(clazz).apply(obj);
+        else if (clazz.isAssignableFrom(List.class))
+            value = toList(obj, listMapComponentType);
+        else if (clazz.isAssignableFrom(Map.class))
+            value = toMap(obj, listMapComponentType);
+        else if (clazz.isArray())
+            value = toArray(obj, (Class<T[]>) clazz);
+        else if (clazz.isEnum())
+            value = toEnum(obj, clazz);
+        else {
+            try {
+                value = toCustomObj(obj, clazz.getDeclaredConstructor().newInstance());
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                throw new ParsingException("Can't create an instance of [" + clazz.getName() + "], please make sure that " +
+                        "this class has no-arguments constructor", e);
+            }
         }
 
-        return toCustomObj(obj, value);
+        return clazz.cast(value);
     }
 
     /**
@@ -96,7 +98,7 @@ public class Parser {
             try {
                 value = Byte.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Byte -- " + e);
+                throw new ParsingException("Can't parse [" + obj + "] to be Byte", e);
             }
         else
             throw new ParsingException("Can't parse [" + obj + "] to be Byte");
@@ -118,7 +120,7 @@ public class Parser {
             try {
                 value = Short.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Short -- " + e);
+                throw new ParsingException("Can't parse [" + obj + "] to be Short", e);
             }
         else
             throw new ParsingException("Can't parse [" + obj + "] to be Short");
@@ -140,7 +142,7 @@ public class Parser {
             try {
                 value = Integer.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Integer -- " + e);
+                throw new ParsingException("Can't parse [" + obj + "] to be Integer", e);
             }
         else
             throw new ParsingException("Can't parse [" + obj + "] to be Integer");
@@ -162,7 +164,7 @@ public class Parser {
             try {
                 value = Long.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Long -- " + e);
+                throw new ParsingException("Can't parse [" + obj + "] to be Long", e);
             }
         } else
             throw new ParsingException("Can't parse [" + obj + "] to be Long");
@@ -184,7 +186,7 @@ public class Parser {
             try {
                 value = Float.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Float -- " + e);
+                throw new ParsingException("Can't parse [" + obj + "] to be Float",  e);
             }
         else
             throw new ParsingException("Can't parse [" + obj + "] to be Float");
@@ -206,7 +208,7 @@ public class Parser {
             try {
                 value = Double.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Double -- " + e);
+                throw new ParsingException("Can't parse [" + obj + "] to be Double", e);
             }
         else
             throw new ParsingException("Can't parse [" + obj + "] to be Double");
@@ -337,23 +339,45 @@ public class Parser {
         throw new ParsingException("This object [" + obj + "] can't be Map");
     }
 
-    protected static <T> T toCustomObj(Object data, T inst) {
-        var fields = inst.getClass().getDeclaredFields();
-        var map = toMap(data, Object.class);
+    private static <T> T[] toArray(Object obj, Class<T[]> clazz) {
+        var arr = toList(obj, clazz.getComponentType()).toArray();
 
-        // todo: support custom names like tt-bb
+        return Arrays.copyOf(arr, arr.length, clazz);
+    }
+
+    private static <T> T toCustomObj(Object data, T inst) {
+        var fields = inst.getClass().getDeclaredFields();
+        Map<String, Object> map;
+        try {
+            map = toMap(data, Object.class);
+        } catch (ParsingException ignore) {
+            throw new ParsingException("Can't parse [" + data + "] to be " + inst.getClass());
+        }
+
         for (Field field : fields) {
             field.setAccessible(true);
             var name = field.getName();
             var type = field.getType();
+            var alisa = field.isAnnotationPresent(Alias.class) ?
+                    field.getAnnotation(Alias.class).value() : null;
 
-            if (map.containsKey(name)) {
-                var value = to(map.get(name), type, getListMapArgument(field, type));
+            if (type.isPrimitive())
+                throw new ParsingException("Primitive types are not supported please use wrapper classes instead. " +
+                        "at [" + name + " " + type.getName() + "]");
 
+            var nameInYAML = (alisa != null && map.containsKey(alisa)) ?
+                    alisa : map.containsKey(name) ?
+                    name : null;
+
+            if (nameInYAML != null) {
                 try {
+                    var value = to(map.get(nameInYAML), type, getListMapArgument(field, type));
                     field.set(inst, value);
+                } catch (ParsingException e1) {
+                    throw new ParsingException("Can't set this value [" + map.get(nameInYAML) + "] for this field [" +
+                            name + " " + type.getName() + "]");
                 } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    throw new ParsingException("Can't access this field [" + name + type.getName() + "]", e);
                 }
             }
         }
@@ -363,27 +387,12 @@ public class Parser {
 
     private static <T> T toEnum(Object obj, Class<T> clazz) {
         try {
-            var x = clazz.getMethod("valueOf", String.class)
-                    .invoke(null, toString(obj));
-            return clazz.cast(x);
+            return clazz.cast(clazz.getMethod("valueOf", String.class)
+                    .invoke(null, toString(obj)));
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new ParsingException("Ensure that this Enum [" + clazz.getName() +
+                    "] contains this value [" + obj + "]", e);
         }
-    }
-
-    private static <T> T objToPrimitive(Object obj, Class<T> clazz) {
-        if (clazz.isAssignableFrom(String.class))
-            return clazz.cast(String.valueOf(obj));
-
-        T value = null;
-
-        try {
-            var valueOf = clazz.getMethod("valueOf", String.class);
-            value = clazz.cast(valueOf.invoke(clazz, obj.toString()));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignore) {
-        }
-
-        return value;
     }
 
     private static Class<?> getListMapArgument(Field field, Class<?> type) {

@@ -1,7 +1,10 @@
 package nsr_yaml;
 
+import exception.ParsingException;
 import exception.YAMLFileException;
+import helper.TestInterface;
 import helper.Person;
+import helper.TestRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -14,8 +17,7 @@ import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 class YAMLTest {
     private final YAMLReader reader = YAML.read("src/test/resources/test.yaml");
@@ -49,13 +51,13 @@ class YAMLTest {
 
     @Test
     void getAllAsStringArrayUsingAs() {
-        assertThat(YAML.read("src/test/resources/list.yaml").get().asArray(String[].class))
+        assertThat(YAML.read("src/test/resources/list.yaml").get().as(String[].class))
                 .isEqualTo(new String[]{"a", "b", "c"});
     }
 
     @Test
     void getArrayOfCustomObject() {
-        assertThat(reader.get("person.children").asArray(Person[].class))
+        assertThat(reader.get("person.children").as(Person[].class))
                 .isEqualTo(new Person[]{new Person().setName("Ali").setAge(10),
                         new Person().setName("Sara").setAge(7)});
     }
@@ -345,6 +347,28 @@ class YAMLTest {
     @ValueSource(strings = " ")
     void invalidFilePath(String filePath) {
         assertThatThrownBy(() -> YAML.read(filePath))
+                .isInstanceOf(YAMLFileException.class);
+    }
+
+    @Test
+    void getInterface() {
+        var thrown = catchThrowableOfType(() -> reader.get().as(TestInterface.class),
+                ParsingException.class);
+
+        assertThat(thrown.getMessage()).isEqualTo("Interfaces can not be initialized");
+    }
+
+    @Test
+    void getRecord() {
+        var thrown = catchThrowableOfType(() -> reader.get().as(TestRecord.class),
+                ParsingException.class);
+
+        assertThat(thrown.getMessage()).isEqualTo("Records are not supported");
+    }
+
+    @Test
+    void loadNotExistedFile() {
+        assertThatThrownBy(() -> YAML.read("not-exist.yaml"))
                 .isInstanceOf(YAMLFileException.class);
     }
 }

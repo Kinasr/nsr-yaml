@@ -6,6 +6,7 @@ public class Pet {
     private String kind;
     private Integer age;
     private Person owner;
+    private int numOfLegs;
 
     public String getKind() {
         return kind;
@@ -34,12 +35,22 @@ public class Pet {
         return this;
     }
 
+    public int getNumOfLegs() {
+        return numOfLegs;
+    }
+
+    public Pet setNumOfLegs(int numOfLegs) {
+        this.numOfLegs = numOfLegs;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Pet{" +
                 "kind='" + kind + '\'' +
                 ", age=" + age +
                 ", owner=" + owner +
+                ", numOfLegs=" + numOfLegs +
                 '}';
     }
 
@@ -47,12 +58,21 @@ public class Pet {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Pet pet = (Pet) o;
-        return Objects.equals(kind, pet.kind) && Objects.equals(age, pet.age) && Objects.equals(owner, pet.owner);
+
+        if (numOfLegs != pet.numOfLegs) return false;
+        if (!Objects.equals(kind, pet.kind)) return false;
+        if (!Objects.equals(age, pet.age)) return false;
+        return Objects.equals(owner, pet.owner);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(kind, age, owner);
+        int result = kind != null ? kind.hashCode() : 0;
+        result = 31 * result + (age != null ? age.hashCode() : 0);
+        result = 31 * result + (owner != null ? owner.hashCode() : 0);
+        result = 31 * result + numOfLegs;
+        return result;
     }
 }
