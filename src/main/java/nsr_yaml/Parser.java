@@ -361,21 +361,22 @@ public class Parser {
             var alisa = field.isAnnotationPresent(Alias.class) ?
                     field.getAnnotation(Alias.class).value() : null;
 
-            if (type.isPrimitive())
-                throw new ParsingException("Primitive types are not supported please use wrapper classes instead. " +
-                        "at [" + name + " " + type.getName() + "]");
 
             var nameInYAML = (alisa != null && map.containsKey(alisa)) ?
                     alisa : map.containsKey(name) ?
                     name : null;
 
             if (nameInYAML != null) {
+                if (type.isPrimitive())
+                    throw new ParsingException("Primitive types are not supported please use wrapper classes instead. " +
+                            "at [" + name + " " + type.getName() + "]");
+
                 try {
                     var value = to(map.get(nameInYAML), type, getListMapArgument(field, type));
                     field.set(inst, value);
-                } catch (ParsingException e1) {
+                } catch (ParsingException e) {
                     throw new ParsingException("Can't set this value [" + map.get(nameInYAML) + "] for this field [" +
-                            name + " " + type.getName() + "]");
+                            name + " " + type.getName() + "]", e);
                 } catch (IllegalAccessException e) {
                     throw new ParsingException("Can't access this field [" + name + type.getName() + "]", e);
                 }
