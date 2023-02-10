@@ -32,9 +32,23 @@ public class Parser {
         parsingMap.put(ZonedDateTime.class, obj -> toZonedDateTime(obj, null));
     }
 
+    /**
+     * Constructor for the Parser class.
+     */
     private Parser() {
     }
 
+    /**
+     * Converts the given `Object` to a specified `Class` of type `T`.
+     *
+     * @param obj    The `Object` to be converted.
+     * @param clazz  The target `Class` of type `T`.
+     * @param clazz2 The component `Class` of type `V` for `List` or `Map` types.
+     * @param <T>    The type of the target class.
+     * @param <V>    The type of the component class for `List` or `Map` types.
+     * @return The converted `Object` of type `T`.
+     * @throws ParsingException If the conversion fails due to missing constructor or unsupported type.
+     */
     @SuppressWarnings("unchecked")
     protected static <T, V> T to(Object obj, Class<T> clazz, Class<V> clazz2) {
         if (obj == null)
@@ -44,7 +58,7 @@ public class Parser {
         var listMapComponentType = clazz2 != null ? clazz2 : Object.class;
 
         if (parsingMap.containsKey(clazz))
-            value  = parsingMap.get(clazz).apply(obj);
+            value = parsingMap.get(clazz).apply(obj);
         else if (clazz.isAssignableFrom(List.class))
             value = toList(obj, listMapComponentType);
         else if (clazz.isAssignableFrom(Map.class))
@@ -58,8 +72,8 @@ public class Parser {
                 value = toCustomObj(obj, clazz.getDeclaredConstructor().newInstance());
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                      NoSuchMethodException e) {
-                throw new ParsingException("Can't create an instance of [" + clazz.getName() + "], please make sure that " +
-                        "this class has no-arguments constructor", e);
+                throw new ParsingException("Can't create an instance of [" + clazz.getName() + "]," +
+                        " please make sure that this class has no-arguments constructor", e);
             }
         }
 
@@ -67,7 +81,11 @@ public class Parser {
     }
 
     /**
-     * Parsing {@link Object} to {@link Boolean}
+     * Converts the given `Object` to a `Boolean`.
+     *
+     * @param obj The `Object` to be converted.
+     * @return The converted `Boolean`.
+     * @throws ParsingException If the conversion fails.
      */
     protected static Boolean toBoolean(Object obj) {
         Boolean value;
@@ -85,7 +103,11 @@ public class Parser {
     }
 
     /**
-     * Parsing {@link Object} to {@link Byte}
+     * Converts an object to a Byte.
+     *
+     * @param obj The object to be converted to a Byte.
+     * @return The resulting Byte, or null if the input object is null.
+     * @throws ParsingException if the input object can't be parsed to a Byte.
      */
     protected static Byte toByte(Object obj) {
         Byte value;
@@ -107,7 +129,11 @@ public class Parser {
     }
 
     /**
-     * Parsing {@link Object} to {@link Short}
+     * Converts an object to a Short.
+     *
+     * @param obj The object to be converted to a Short.
+     * @return The resulting Short, or null if the input object is null.
+     * @throws ParsingException if the input object can't be parsed to a Short.
      */
     protected static Short toShort(Object obj) {
         Short value;
@@ -129,7 +155,11 @@ public class Parser {
     }
 
     /**
-     * Parsing {@link Object} to {@link Integer}
+     * Converts an object to an Integer.
+     *
+     * @param obj The object to be converted to an Integer.
+     * @return The resulting Integer, or null if the input object is null.
+     * @throws ParsingException if the input object can't be parsed to an Integer.
      */
     protected static Integer toInteger(Object obj) {
         Integer value;
@@ -151,7 +181,11 @@ public class Parser {
     }
 
     /**
-     * Parsing {@link Object} to {@link Long}
+     * Converts an object to a Long.
+     *
+     * @param obj The object to be converted to a Long.
+     * @return The resulting Long, or null if the input object is null.
+     * @throws ParsingException if the input object can't be parsed to a Long.
      */
     protected static Long toLong(Object obj) {
         Long value;
@@ -173,7 +207,11 @@ public class Parser {
     }
 
     /**
-     * Parsing {@link Object} to {@link Float}
+     * Converts an object to a Float.
+     *
+     * @param obj The object to be converted to a Float.
+     * @return The resulting Float, or null if the input object is null.
+     * @throws ParsingException if the input object can't be parsed to a Float.
      */
     protected static Float toFloat(Object obj) {
         Float value;
@@ -186,7 +224,7 @@ public class Parser {
             try {
                 value = Float.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Float",  e);
+                throw new ParsingException("Can't parse [" + obj + "] to be Float", e);
             }
         else
             throw new ParsingException("Can't parse [" + obj + "] to be Float");
@@ -195,7 +233,11 @@ public class Parser {
     }
 
     /**
-     * Parsing {@link Object} to {@link Double}
+     * Converts an object to a Double.
+     *
+     * @param obj The object to be converted to a Double.
+     * @return The resulting Double, or null if the input object is null.
+     * @throws ParsingException if the input object can't be parsed to a Double.
      */
     protected static Double toDouble(Object obj) {
         Double value;
@@ -217,12 +259,23 @@ public class Parser {
     }
 
     /**
-     * Parsing {@link Object} to {@link String}
+     * Converts an object to a String.
+     *
+     * @param obj The object to be converted to a String.
+     * @return The resulting String, or null if the input object is null.
      */
     protected static String toString(Object obj) {
         return obj != null ? String.valueOf(obj) : null;
     }
 
+    /**
+     * Converts the given `obj` to a `LocalDate` object based on the specified `pattern`.
+     *
+     * @param obj the object to be converted to `LocalDate`
+     * @param pattern the pattern to be used for parsing the `obj` to `LocalDate`
+     * @return the converted `LocalDate` object, or `null` if the `obj` is `null`
+     * @throws DateTimeParseException if the string representation of `obj` cannot be parsed to `LocalDate`
+     */
     protected static LocalDate toLocalDate(Object obj, String pattern) {
         if (obj == null)
             return null;
@@ -247,6 +300,13 @@ public class Parser {
         return localDate.get();
     }
 
+    /**
+     * Convert the given object to a LocalTime object.
+     *
+     * @param obj The object to be converted to a LocalTime object.
+     * @param pattern The date pattern to be used for parsing the object.
+     * @return The converted LocalTime object. Returns null if the input object is null.
+     */
     protected static LocalTime toLocalTime(Object obj, String pattern) {
         if (obj == null)
             return null;
@@ -269,6 +329,13 @@ public class Parser {
         return localTime.get();
     }
 
+    /**
+     * Convert the given object to a LocalDateTime object.
+     *
+     * @param obj The object to be converted to a LocalDateTime object.
+     * @param pattern The date pattern to be used for parsing the object.
+     * @return The converted LocalDateTime object. Returns null if the input object is null.
+     */
     protected static LocalDateTime toLocalDateTime(Object obj, String pattern) {
         if (obj == null)
             return null;
@@ -293,6 +360,13 @@ public class Parser {
         return localDateTime.get();
     }
 
+    /**
+     * Convert the given object to a ZonedDateTime object.
+     *
+     * @param obj The object to be converted to a ZonedDateTime object.
+     * @param pattern The date pattern to be used for parsing the object.
+     * @return The converted ZonedDateTime object. Returns null if the input object is null.
+     */
     protected static ZonedDateTime toZonedDateTime(Object obj, String pattern) {
         if (obj == null)
             return null;
@@ -315,6 +389,15 @@ public class Parser {
         return zonedDateTime.get();
     }
 
+    /**
+     * Convert the given object to a list of objects of the specified class.
+     *
+     * @param obj The object to be converted to a list.
+     * @param clazz The class of the objects in the list.
+     * @param <T> The type of the objects in the list.
+     * @return The converted list of objects.
+     * @throws ParsingException if the input object cannot be converted to a list.
+     */
     protected static <T> List<T> toList(Object obj, Class<T> clazz) {
         if (obj instanceof List<?> list) {
             var nList = new ArrayList<T>();
@@ -327,6 +410,15 @@ public class Parser {
         throw new ParsingException("This object [" + obj + "] can't be list");
     }
 
+    /**
+     * Convert the given object to a map of keys and values of the specified class.
+     *
+     * @param obj The object to be converted to a map.
+     * @param clazz The class of the values in the map.
+     * @param <T> The type of the values in the map.
+     * @return The converted map of keys and values.
+     * @throws ParsingException if the input object cannot be converted to a map.
+     */
     protected static <T> Map<String, T> toMap(Object obj, Class<T> clazz) {
         if (obj instanceof Map<?, ?> map) {
             var nMap = new HashMap<String, T>();
@@ -339,19 +431,38 @@ public class Parser {
         throw new ParsingException("This object [" + obj + "] can't be Map");
     }
 
+    /**
+     * Converts the given `obj` to an array of the specified type `clazz`.
+     *
+     * @param obj the object to be converted
+     * @param clazz the class representing the type of the array to be returned
+     * @param <T> the type of the array elements
+     *
+     * @return an array of the specified type `clazz`
+     * @throws ParsingException if the given `obj` can't be converted to a list
+     */
     private static <T> T[] toArray(Object obj, Class<T[]> clazz) {
         var arr = toList(obj, clazz.getComponentType()).toArray();
 
         return Arrays.copyOf(arr, arr.length, clazz);
     }
 
-    private static <T> T toCustomObj(Object data, T inst) {
+    /**
+     * Converts an object to a custom object of the given instance.
+     *
+     * @param obj Object to be converted.
+     * @param inst Instance of the custom object to convert the object to.
+     * @param <T> The type of the custom object.
+     * @return A custom object of the given instance.
+     * @throws ParsingException If the conversion fails, or if the instance cannot be created.
+     */
+    private static <T> T toCustomObj(Object obj, T inst) {
         var fields = inst.getClass().getDeclaredFields();
         Map<String, Object> map;
         try {
-            map = toMap(data, Object.class);
+            map = toMap(obj, Object.class);
         } catch (ParsingException ignore) {
-            throw new ParsingException("Can't parse [" + data + "] to be " + inst.getClass());
+            throw new ParsingException("Can't parse [" + obj + "] to be " + inst.getClass());
         }
 
         for (Field field : fields) {
@@ -386,6 +497,15 @@ public class Parser {
         return inst;
     }
 
+    /**
+     * Convert the given `obj` to the specified enum class `clazz`.
+     *
+     * @param obj The object to be converted.
+     * @param clazz The target enum class.
+     * @param <T> The type of the target enum class.
+     * @return The converted enum object.
+     * @throws ParsingException If the specified enum class does not contain the value of the given `obj`, or if there is a problem invoking the conversion.
+     */
     private static <T> T toEnum(Object obj, Class<T> clazz) {
         try {
             return clazz.cast(clazz.getMethod("valueOf", String.class)
@@ -396,6 +516,16 @@ public class Parser {
         }
     }
 
+    /**
+     * This method retrieves the argument class type of List or Map generic type.
+     *
+     * @param field - The field that we want to retrieve its argument class type.
+     * @param type - The type of the field, either a List or Map.
+     *
+     * @return the argument class type of the generic List or Map type.
+     *
+     * @throws ParsingException if the field is not a List or Map generic type.
+     */
     private static Class<?> getListMapArgument(Field field, Class<?> type) {
         var isList = type.isAssignableFrom(List.class);
 

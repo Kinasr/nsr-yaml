@@ -651,7 +651,7 @@ class YAMLReaderTest {
                     .isInstanceOf(Integer.class)
                     .isEqualTo(9946);
         }
-        
+
         @Test
         void getStringInteger() {
             var data = Map.of(
@@ -754,7 +754,7 @@ class YAMLReaderTest {
                     .isInstanceOf(Long.class)
                     .isEqualTo(9946);
         }
-        
+
         @Test
         void getStringLong() {
             var data = Map.of(
@@ -1675,6 +1675,23 @@ class YAMLReaderTest {
                     ParsingException.class);
             assertThat(thrown.getMessage())
                     .isEqualTo("This object [test] can't be Map");
+        }
+
+        @Test
+        void getStringFromNestedList() {
+            var data = Map.of(
+                    "data", List.of(
+                            List.of(
+                                    "A",
+                                    List.of(
+                                            "text"
+                                    )
+                            )
+                    )
+            );
+
+            assertThat(new YAMLReader(data, new ObjMapper(false)).get("data[0][1][0]").asString())
+                    .isEqualTo("text");
         }
     }
 

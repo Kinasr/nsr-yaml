@@ -1,5 +1,4 @@
 date-config:
-  zone-id: Africa/Cairo
   date-pattern: "yyyy-MM-dd"
   time-pattern: "HH:mm:ss"
   date-time-pattern: "yyyy-MM-dd HH:mm:ss"
