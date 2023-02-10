@@ -8,24 +8,17 @@ import java.util.Map;
 import static nsr_yaml.Parser.*;
 
 /**
- * <body>
- * <h1>Class YAMLObject</h1>
- * <p>The YAMLObject class provides a convenient way to access and manipulate data stored in YAML format.
- * It contains various methods to convert the stored data into different data structures like Object, String, List, Map, etc.</p>
- * <h2>Fields</h2>
- * <ul>
- *   <li>
- *     <strong>data:</strong> final Object - Represents the data stored in the YAMLObject.
- *   </li>
- * </ul>
- * <br/>
- * <h2>Constructor</h2>
- * <ul>
- *   <li>
- *     <strong>YAMLObject(Object data)</strong> - Creates a new YAMLObject with the specified data.
- *   </li>
- * </ul>
- * <body/>
+ * Class YAMLObject
+ * The YAMLObject class provides a convenient way to access and manipulate data stored in YAML format.
+ * It contains various methods to convert the stored data into different data structures like Object, String, List, Map, etc.
+ * <p>
+ * Fields
+ * <p>
+ * data: final Object - Represents the data stored in the YAMLObject.
+ * <p>
+ * Constructor
+ * <p>
+ * YAMLObject(Object data) - Creates a new YAMLObject with the specified data.
  */
 public class YAMLObject {
     private final Object data;
@@ -70,8 +63,8 @@ public class YAMLObject {
      * Returns the data stored in the YAMLObject as a List of a specified type.
      *
      * @param clazz The Class representing the type of objects to be returned.
+     * @param <T>   object type
      * @return The data stored in the YAMLObject as a List of the specified type.
-     * @param <T> object type
      */
     public <T> List<T> asList(Class<T> clazz) {
         validateClazz(clazz);
@@ -91,8 +84,8 @@ public class YAMLObject {
      * Returns the data stored in the YAMLObject as a Map with String keys and values of a specified type.
      *
      * @param clazz The Class representing the type of values to be returned.
+     * @param <T>   object type
      * @return The data stored in the YAMLObject as a Map with String keys and values of the specified type.
-     * @param <T> object type
      */
     public <T> Map<String, T> asMap(Class<T> clazz) {
         validateClazz(clazz);
@@ -103,8 +96,8 @@ public class YAMLObject {
      * Returns the data stored in the YAMLObject as an instance of the specified type.
      *
      * @param clazz The Class representing the type of object to be returned.
+     * @param <T>   object type
      * @return The data stored in the YAMLObject as an instance of the specified type.
-     * @param <T> object type
      */
     public <T> T as(Class<T> clazz) {
         validateClazz(clazz);
@@ -115,9 +108,9 @@ public class YAMLObject {
      * Validates the specified Class to ensure it is supported for conversion.
      *
      * @param clazz The Class to be validated.
+     * @param <T>   object type
      * @throws ParsingException if the specified Class is an interface other than List or Map,
-     *         if it is a Record, or if it is an Array of unsupported components.
-     * @param <T> object type
+     *                          if it is a Record, or if it is an Array of unsupported components.
      */
     private <T> void validateClazz(Class<T> clazz) {
         var errorMsg = "";

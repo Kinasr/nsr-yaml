@@ -10,23 +10,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <body>
- * <h1>Class YAMLFileLoader</h1>
- * <p>This class provides a way to load data from a YAML file. The loaded data will be stored in a hash map so that
+ * Class YAMLFileLoader
+ * <p>
+ * This class provides a way to load data from a YAML file. The loaded data will be stored in a hash map so that
  * future requests for the same file can be served from the hash map without having to load the file again.
  * The class has a private constructor and a protected static method "load" that returns the loaded data as an Object.
- * The class also has several private methods that handle the reading and parsing of the YAML file.</p>
- * <br/>
- * <h2>Constructor</h2>
+ * The class also has several private methods that handle the reading and parsing of the YAML file.
  * <p>
- * <code>private YAMLFileLoader(String filePath)</code><br>
- * Constructs a new YAMLFileLoader object.
- * </p>
- * <h3>Parameters</h3>
- * <ul>
- *   <li><code>filePath</code> - the file path of the YAML file</li>
- * </ul>
- * </body>
+ * Constructor
+ * private YAMLFileLoader(String filePath) Constructs a new YAMLFileLoader object.
+ * <p>
+ * Parameters
+ * filePath - the file path of the YAML file
  */
 public class YAMLFileLoader {
     private final static Map<String, Object> loadedFiles = new HashMap<>();

@@ -1,9 +1,10 @@
 package exception;
 
 /**
- * <h1>YAMLFileException Class</h1>
- * <p>The YAMLFileException class extends the RuntimeException class and represents an error that occurred while
- * reading or writing a YAML file.</p>
+ * YAMLFileException Class
+ * <p>
+ * The YAMLFileException class extends the RuntimeException class and represents an error that occurred while
+ * reading or writing a YAML file.
  */
 public class YAMLFileException extends RuntimeException {
 

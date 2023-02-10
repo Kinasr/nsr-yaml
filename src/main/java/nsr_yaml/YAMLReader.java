@@ -3,49 +3,34 @@ package nsr_yaml;
 import exception.InvalidKeyException;
 
 /**
- * <body>
- *     <h1>Class YAMLReader</h1>
- *     <p>The YAMLReader class is used to read YAML data and convert it into usable objects.</p>
- *     <h2>Constructor</h2>
- *     <h3>YAMLReader(Object yamlData, ObjMapper mapper)</h3>
- *     <p>
- *       Constructs a YAMLReader with the specified YAML data and Object Mapper.
- *     </p>
- *     <h3>Parameters:</h3>
- *     <ul>
- *       <li>
- *         <code>yamlData</code> - The YAML data to be read.
- *       </li>
- *       <li>
- *         <code>mapper</code> - The Object Mapper used to convert the YAML data.
- *       </li>
- *     </ul>
- *     <h2>Methods</h2>
- *     <h3>YAMLObj get(String key)</h3>
- *     <p>
- *       Returns a YAMLObj representing the value associated with the specified key in the YAML data.
- *     </p>
- *     <h3>Parameters:</h3>
- *     <ul>
- *       <li>
- *         <code>key</code> - The key associated with the desired value in the YAML data.
- *       </li>
- *     </ul>
- *     <h3>Returns:</h3>
- *     <p>A YAMLObj representing the value associated with the specified key in the YAML data.</p>
- *     <h3>Throws:</h3>
- *     <ul>
- *       <li>
- *         <code>InvalidKeyException</code> - if the specified key is null or empty.
- *       </li>
- *     </ul>
- *     <h3>YAMLObject get()</h3>
- *     <p>
- *       Returns a YAMLObject representation of the YAML data.
- *     </p>
- *     <h3>Returns:</h3>
- *     <p>A YAMLObject representation of the YAML data.</p>
- *   </body>
+ * Class YAMLReader
+ * The YAMLReader class is used to read YAML data and convert it into usable objects.
+ * <p>
+ * Constructor
+ * <p>
+ * YAMLReader(Object yamlData, ObjMapper mapper)
+ * Constructs a YAMLReader with the specified YAML data and Object Mapper.
+ * <p>
+ * Parameters:
+ * <p>
+ * yamlData - The YAML data to be read.
+ * mapper - The Object Mapper used to convert the YAML data.
+ * <p>
+ * Methods
+ * <p>
+ * YAMLObj get(String key)
+ * Returns a YAMLObj representing the value associated with the specified key in the YAML data.
+ * Parameters:
+ * key - The key associated with the desired value in the YAML data.
+ * Returns:
+ * A YAMLObj representing the value associated with the specified key in the YAML data.
+ * Throws:
+ * InvalidKeyException - if the specified key is null or empty.
+ * <p>
+ * YAMLObject get()
+ * Returns a YAMLObject representation of the YAML data.
+ * Returns:
+ * A YAMLObject representation of the YAML data.
  */
 public class YAMLReader {
     private final Object data;
@@ -55,7 +40,7 @@ public class YAMLReader {
      * Constructs a YAMLReader with the specified YAML data and Object Mapper.
      *
      * @param yamlData The YAML data to be read.
-     * @param mapper The Object Mapper used to convert the YAML data.
+     * @param mapper   The Object Mapper used to convert the YAML data.
      */
     protected YAMLReader(Object yamlData, ObjMapper mapper) {
         this.data = yamlData;

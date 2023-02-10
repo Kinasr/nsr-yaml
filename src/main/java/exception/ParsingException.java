@@ -1,9 +1,10 @@
 package exception;
 
 /**
- * <h1>ParsingException Class</h1>
- * <p>The ParsingException class extends the RuntimeException class and represents a parsing error that occurred
- * during the execution of a program.</p>
+ * ParsingException Class
+ * <p>
+ * The ParsingException class extends the RuntimeException class and represents a parsing error that occurred
+ * during the execution of a program.
  */
 public class ParsingException extends RuntimeException {
 

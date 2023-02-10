@@ -8,20 +8,17 @@ import java.time.ZonedDateTime;
 import static nsr_yaml.Parser.*;
 
 /**
- * <body>
- * <h1>Class YAMLObj</h1>
- * <p>The <code>YAMLObj</code> class extends the <code>YAMLObject</code> class and stores an object,
- * <code>data</code>, as its state.</p>
- * <p>It provides various methods to convert the stored data to various data types including Boolean, Byte, Short,
- * Integer, Long, Float, Double, LocalDate, LocalTime, LocalDateTime, ZonedDateTime, etc.</p>
- * <br/>
- * <h2>Constructor</h2>
- * <pre>
- *     <code>protected YAMLObj(Object data)</code>
- *     </pre>
- * <p>This constructor takes an <code>Object</code> data as an argument and creates a new <code>YAMLObj</code>
- * instance with the specified data stored in it.</p>
- * </body>
+ * Class YAMLObj
+ * The YAMLObj class extends the YAMLObject class and stores an object,
+ * data, as its state.
+ * It provides various methods to convert the stored data to various data types including Boolean, Byte, Short,
+ * Integer, Long, Float, Double, LocalDate, LocalTime, LocalDateTime, ZonedDateTime, etc.
+ * <p>
+ * Constructor
+ * <p>
+ * protected YAMLObj(Object data)
+ * This constructor takes an Object data as an argument and creates a new YAMLObj
+ * instance with the specified data stored in it.
  */
 public class YAMLObj extends YAMLObject {
     private final Object data;

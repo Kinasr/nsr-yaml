@@ -1,9 +1,10 @@
 package exception;
 
 /**
- * <h1>Class InvalidKeyException</h1>
- * <p>This class extends the RuntimeException class and represents an exception that is thrown when
- * an invalid key is used.</p>
+ * Class InvalidKeyException
+ * <p>
+ * This class extends the RuntimeException class and represents an exception that is thrown when
+ * an invalid key is used.
  */
 public class InvalidKeyException extends RuntimeException {
 

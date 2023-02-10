@@ -14,19 +14,16 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 /**
- * <body>
- * <h1>Parser Class</h1>
- * <p>The Parser class is a utility class for converting an Object to a specified Class of type T.</p>
- * <h2>Fields</h2>
- * <ul>
- *   <li><strong>parsingMap</strong> - a static final Map of Class objects to Functions for parsing Objects
- *   to the specified Class.</li>
- * </ul>
- * <h2>Constructor</h2>
- * <ul>
- *   <li><strong>Parser</strong> - a private constructor for the Parser class.</li>
- * </ul>
- * </body>
+ * Parser Class
+ * <p>
+ * The Parser class is a utility class for converting an Object to a specified Class of type T.
+ * <p>
+ * Fields
+ * parsingMap - a static final Map of Class objects to Functions for parsing Objects
+ * to the specified Class.
+ * <p>
+ * Constructor
+ * Parser - a private constructor for the Parser class.
  */
 public class Parser {
     private static final Map<Class<?>, Function<Object, ?>> parsingMap = new HashMap<>();

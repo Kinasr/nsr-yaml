@@ -3,10 +3,8 @@ package nsr_yaml;
 import exception.YAMLFileException;
 
 /**
- * <body>
- * <h1>YAML Class</h1>
- * <p>This class provides methods for reading a YAML file and returning a YAMLReader instance.</p>
- * </body>
+ * YAML Class
+ * This class provides methods for reading a YAML file and returning a YAMLReader instance.
  */
 public class YAML {
 
