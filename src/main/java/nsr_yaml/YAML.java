@@ -3,24 +3,30 @@ package nsr_yaml;
 import exception.YAMLFileException;
 
 /**
- * The entry class
+ * <body>
+ * <h1>YAML Class</h1>
+ * <p>This class provides methods for reading a YAML file and returning a YAMLReader instance.</p>
+ * </body>
  */
 public class YAML {
 
     /**
-     * Reading a YAML file
-     * @param filePath the relative file path
-     * @return new instance of YAMLReader class
+     * Reads a YAML file and returns a `YAMLReader` instance.
+     *
+     * @param filePath The file path of the YAML file.
+     * @return A `YAMLReader` instance representing the contents of the YAML file.
      */
     public static YAMLReader read(String filePath) {
         return read(filePath, true);
     }
 
     /**
-     * Reading a YAML file with availability to disable environment change (for internal use)
-     * @param filePath the relative file path
-     * @param changeEnv to disable environment change
-     * @return new instance of YAMLReader class
+     * Reads a YAML file and returns a `YAMLReader` instance.
+     *
+     * @param filePath  The file path of the YAML file.
+     * @param changeEnv Whether to perform environment variable substitution on the file contents.
+     * @return A `YAMLReader` instance representing the contents of the YAML file.
+     * @throws YAMLFileException If the file path is `null`, empty, or blank.
      */
     protected static YAMLReader read(String filePath, Boolean changeEnv) {
         if (filePath == null || filePath.isEmpty() || filePath.isBlank())

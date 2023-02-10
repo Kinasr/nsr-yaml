@@ -13,6 +13,21 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+/**
+ * <body>
+ * <h1>Parser Class</h1>
+ * <p>The Parser class is a utility class for converting an Object to a specified Class of type T.</p>
+ * <h2>Fields</h2>
+ * <ul>
+ *   <li><strong>parsingMap</strong> - a static final Map of Class objects to Functions for parsing Objects
+ *   to the specified Class.</li>
+ * </ul>
+ * <h2>Constructor</h2>
+ * <ul>
+ *   <li><strong>Parser</strong> - a private constructor for the Parser class.</li>
+ * </ul>
+ * </body>
+ */
 public class Parser {
     private static final Map<Class<?>, Function<Object, ?>> parsingMap = new HashMap<>();
 
@@ -271,7 +286,7 @@ public class Parser {
     /**
      * Converts the given `obj` to a `LocalDate` object based on the specified `pattern`.
      *
-     * @param obj the object to be converted to `LocalDate`
+     * @param obj     the object to be converted to `LocalDate`
      * @param pattern the pattern to be used for parsing the `obj` to `LocalDate`
      * @return the converted `LocalDate` object, or `null` if the `obj` is `null`
      * @throws DateTimeParseException if the string representation of `obj` cannot be parsed to `LocalDate`
@@ -303,7 +318,7 @@ public class Parser {
     /**
      * Convert the given object to a LocalTime object.
      *
-     * @param obj The object to be converted to a LocalTime object.
+     * @param obj     The object to be converted to a LocalTime object.
      * @param pattern The date pattern to be used for parsing the object.
      * @return The converted LocalTime object. Returns null if the input object is null.
      */
@@ -332,7 +347,7 @@ public class Parser {
     /**
      * Convert the given object to a LocalDateTime object.
      *
-     * @param obj The object to be converted to a LocalDateTime object.
+     * @param obj     The object to be converted to a LocalDateTime object.
      * @param pattern The date pattern to be used for parsing the object.
      * @return The converted LocalDateTime object. Returns null if the input object is null.
      */
@@ -363,7 +378,7 @@ public class Parser {
     /**
      * Convert the given object to a ZonedDateTime object.
      *
-     * @param obj The object to be converted to a ZonedDateTime object.
+     * @param obj     The object to be converted to a ZonedDateTime object.
      * @param pattern The date pattern to be used for parsing the object.
      * @return The converted ZonedDateTime object. Returns null if the input object is null.
      */
@@ -392,9 +407,9 @@ public class Parser {
     /**
      * Convert the given object to a list of objects of the specified class.
      *
-     * @param obj The object to be converted to a list.
+     * @param obj   The object to be converted to a list.
      * @param clazz The class of the objects in the list.
-     * @param <T> The type of the objects in the list.
+     * @param <T>   The type of the objects in the list.
      * @return The converted list of objects.
      * @throws ParsingException if the input object cannot be converted to a list.
      */
@@ -413,9 +428,9 @@ public class Parser {
     /**
      * Convert the given object to a map of keys and values of the specified class.
      *
-     * @param obj The object to be converted to a map.
+     * @param obj   The object to be converted to a map.
      * @param clazz The class of the values in the map.
-     * @param <T> The type of the values in the map.
+     * @param <T>   The type of the values in the map.
      * @return The converted map of keys and values.
      * @throws ParsingException if the input object cannot be converted to a map.
      */
@@ -434,10 +449,9 @@ public class Parser {
     /**
      * Converts the given `obj` to an array of the specified type `clazz`.
      *
-     * @param obj the object to be converted
+     * @param obj   the object to be converted
      * @param clazz the class representing the type of the array to be returned
-     * @param <T> the type of the array elements
-     *
+     * @param <T>   the type of the array elements
      * @return an array of the specified type `clazz`
      * @throws ParsingException if the given `obj` can't be converted to a list
      */
@@ -450,9 +464,9 @@ public class Parser {
     /**
      * Converts an object to a custom object of the given instance.
      *
-     * @param obj Object to be converted.
+     * @param obj  Object to be converted.
      * @param inst Instance of the custom object to convert the object to.
-     * @param <T> The type of the custom object.
+     * @param <T>  The type of the custom object.
      * @return A custom object of the given instance.
      * @throws ParsingException If the conversion fails, or if the instance cannot be created.
      */
@@ -500,9 +514,9 @@ public class Parser {
     /**
      * Convert the given `obj` to the specified enum class `clazz`.
      *
-     * @param obj The object to be converted.
+     * @param obj   The object to be converted.
      * @param clazz The target enum class.
-     * @param <T> The type of the target enum class.
+     * @param <T>   The type of the target enum class.
      * @return The converted enum object.
      * @throws ParsingException If the specified enum class does not contain the value of the given `obj`, or if there is a problem invoking the conversion.
      */
@@ -520,10 +534,8 @@ public class Parser {
      * This method retrieves the argument class type of List or Map generic type.
      *
      * @param field - The field that we want to retrieve its argument class type.
-     * @param type - The type of the field, either a List or Map.
-     *
+     * @param type  - The type of the field, either a List or Map.
      * @return the argument class type of the generic List or Map type.
-     *
      * @throws ParsingException if the field is not a List or Map generic type.
      */
     private static Class<?> getListMapArgument(Field field, Class<?> type) {
