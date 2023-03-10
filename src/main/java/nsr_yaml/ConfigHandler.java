@@ -136,6 +136,7 @@ class ConfigHandler {
             try {
                 config.value = read.apply(config.key);
             } catch (InvalidKeyException ignore) {
+                // Ignore if the key is not exist
             } finally {
                 config.isFetched = true;
             }

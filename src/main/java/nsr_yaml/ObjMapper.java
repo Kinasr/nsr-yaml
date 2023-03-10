@@ -38,10 +38,10 @@ import static nsr_yaml.Parser.toMap;
  * </body>
  */
 class ObjMapper {
-    private final static String KEY_CONTAINS_LIST_REGEX = "^.*(\\[\\d+])+$";
-    private final static String NUMBER_IN_SQUARE_BRACKETS_REGEX = "\\[\\d+]";
-    private final static String SQUARE_BRACKETS_REGEX = "[\\[\\]]";
-    private final static String KEY_SEPARATOR_REGEX = "\\.";
+    private static final String KEY_CONTAINS_LIST_REGEX = "^.*[\\[\\d+]]+$";
+    private static final String NUMBER_IN_SQUARE_BRACKETS_REGEX = "\\[\\d+]";
+    private static final String SQUARE_BRACKETS_REGEX = "[\\[\\]]";
+    private static final String KEY_SEPARATOR_REGEX = "\\.";
 
     private final Boolean changeEnv;
 
@@ -65,7 +65,7 @@ class ObjMapper {
         var keys = splitKey(key);
 
         for (String k : keys) {
-            if (isList(k))
+            if (Boolean.TRUE.equals(isList(k)))
                 obj = getObjFromList(obj, k);
             else
                 obj = getObjFromMap(obj, k);
@@ -112,7 +112,7 @@ class ObjMapper {
      */
     private Object getObjFromMap(Object obj, String key) {
         var m = toMap(obj, Object.class);
-        var map = changeEnv ? changeEnv(m) : m;
+        var map = Boolean.TRUE.equals(changeEnv) ? changeEnv(m) : m;
 
         if (!map.containsKey(key))
             throw new InvalidKeyException("This key [" + key + "] does not exist in [" + map + "]");

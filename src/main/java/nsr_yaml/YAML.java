@@ -32,4 +32,6 @@ public class YAML {
 
         return new YAMLReader(YAMLFileLoader.load(filePath), new ObjMapper(changeEnv));
     }
+
+    private YAML() {}
 }

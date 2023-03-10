@@ -29,6 +29,7 @@ import static nsr_yaml.Helper.changeEnv;
  */
 public class Parser {
     private static final Map<Class<?>, Function<Object, ?>> parsingMap = new HashMap<>();
+    private static final String FROM_DATE_PATTERN = "EEE MMM dd HH:mm:ss zzz yyyy";
 
     static {
         parsingMap.put(Object.class, obj -> obj);
@@ -111,7 +112,7 @@ public class Parser {
         else if (obj instanceof String str)
             value = Boolean.valueOf(str);
         else
-            throw new ParsingException("Can't parse [" + obj + "] to be Boolean");
+            throw new ParsingException(parsingErrorMsg(obj, "Boolean"));
 
         return value;
     }
@@ -134,10 +135,10 @@ public class Parser {
             try {
                 value = Byte.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Byte", e);
+                throw new ParsingException(parsingErrorMsg(obj, "Byte"), e);
             }
         else
-            throw new ParsingException("Can't parse [" + obj + "] to be Byte");
+            throw new ParsingException(parsingErrorMsg(obj, "Byte"));
 
         return value;
     }
@@ -160,10 +161,10 @@ public class Parser {
             try {
                 value = Short.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Short", e);
+                throw new ParsingException(parsingErrorMsg(obj, "Short"), e);
             }
         else
-            throw new ParsingException("Can't parse [" + obj + "] to be Short");
+            throw new ParsingException(parsingErrorMsg(obj, "Short"));
 
         return value;
     }
@@ -186,10 +187,10 @@ public class Parser {
             try {
                 value = Integer.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Integer", e);
+                throw new ParsingException(parsingErrorMsg(obj, "Integer"), e);
             }
         else
-            throw new ParsingException("Can't parse [" + obj + "] to be Integer");
+            throw new ParsingException(parsingErrorMsg(obj, "Integer"));
 
         return value;
     }
@@ -212,10 +213,10 @@ public class Parser {
             try {
                 value = Long.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Long", e);
+                throw new ParsingException(parsingErrorMsg(obj, "Long"), e);
             }
         } else
-            throw new ParsingException("Can't parse [" + obj + "] to be Long");
+            throw new ParsingException(parsingErrorMsg(obj, "Long"));
 
         return value;
     }
@@ -238,10 +239,10 @@ public class Parser {
             try {
                 value = Float.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Float", e);
+                throw new ParsingException(parsingErrorMsg(obj, "Float"), e);
             }
         else
-            throw new ParsingException("Can't parse [" + obj + "] to be Float");
+            throw new ParsingException(parsingErrorMsg(obj, "Float"));
 
         return value;
     }
@@ -264,10 +265,10 @@ public class Parser {
             try {
                 value = Double.valueOf(str);
             } catch (NumberFormatException e) {
-                throw new ParsingException("Can't parse [" + obj + "] to be Double", e);
+                throw new ParsingException(parsingErrorMsg(obj, "Double"), e);
             }
         else
-            throw new ParsingException("Can't parse [" + obj + "] to be Double");
+            throw new ParsingException(parsingErrorMsg(obj, "Double"));
 
         return value;
     }
@@ -297,9 +298,10 @@ public class Parser {
         var objStr = toString(obj);
         try {
             return LocalDate.parse(objStr,
-                            DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy").withLocale(Locale.US))
+                            DateTimeFormatter.ofPattern(FROM_DATE_PATTERN).withLocale(Locale.US))
                     .plusDays(OffsetDateTime.now().getOffset().getTotalSeconds() < 0 ? 1 : 0);
         } catch (DateTimeParseException ignore) {
+            // Ignore the exception, this to handle the dates that read as Date object by default
         }
 
         AtomicReference<LocalDate> localDate = new AtomicReference<>();
@@ -357,9 +359,10 @@ public class Parser {
         var objStr = toString(obj);
         try {
             return LocalDateTime.parse(objStr,
-                            DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy").withLocale(Locale.US))
+                            DateTimeFormatter.ofPattern(FROM_DATE_PATTERN).withLocale(Locale.US))
                     .minusSeconds(OffsetDateTime.now().getOffset().getTotalSeconds());
         } catch (DateTimeParseException ignore) {
+            // Ignore the exception, this to handle the dates that read as Date object by default
         }
 
         AtomicReference<LocalDateTime> localDateTime = new AtomicReference<>();
@@ -388,8 +391,9 @@ public class Parser {
         var objStr = toString(obj);
         try {
             return ZonedDateTime.parse(objStr,
-                    DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy").withLocale(Locale.US));
+                    DateTimeFormatter.ofPattern(FROM_DATE_PATTERN).withLocale(Locale.US));
         } catch (DateTimeParseException ignore) {
+            // Ignore the exception, this to handle the dates that read as Date object by default
         }
 
         var zonedDateTime = new AtomicReference<ZonedDateTime>();
@@ -475,7 +479,7 @@ public class Parser {
         try {
             map = toMap(obj, Object.class);
         } catch (ParsingException ignore) {
-            throw new ParsingException("Can't parse [" + obj + "] to be " + inst.getClass());
+            throw new ParsingException(parsingErrorMsg(obj, inst.getClass().toString()));
         }
 
         map = changeEnv(map);
@@ -487,10 +491,11 @@ public class Parser {
             var alisa = field.isAnnotationPresent(Alias.class) ?
                     field.getAnnotation(Alias.class).value() : null;
 
-
-            var nameInYAML = (alisa != null && map.containsKey(alisa)) ?
-                    alisa : map.containsKey(name) ?
-                    name : null;
+            String nameInYAML = null;
+            if ((alisa != null && map.containsKey(alisa)))
+                nameInYAML = alisa;
+            else if (map.containsKey(name))
+                nameInYAML = name;
 
             if (nameInYAML != null) {
                 if (type.isPrimitive())
@@ -547,5 +552,9 @@ public class Parser {
 
         return ((Class<?>) ((ParameterizedType) field.getGenericType())
                 .getActualTypeArguments()[isList ? 0 : 1]);
+    }
+
+    private static String parsingErrorMsg(Object obj, String type) {
+        return "Can't parse [" + obj + "] to be " + type;
     }
 }
