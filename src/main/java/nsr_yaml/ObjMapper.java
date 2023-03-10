@@ -5,9 +5,9 @@ import exception.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
+import static nsr_yaml.Helper.changeEnv;
 import static nsr_yaml.Parser.toList;
 import static nsr_yaml.Parser.toMap;
 
@@ -38,10 +38,10 @@ import static nsr_yaml.Parser.toMap;
  * </body>
  */
 class ObjMapper {
-    private final static String KEY_CONTAINS_LIST_REGEX = "^.*(\\[\\d+])+$";
-    private final static String NUMBER_IN_SQUARE_BRACKETS_REGEX = "\\[\\d+]";
-    private final static String SQUARE_BRACKETS_REGEX = "[\\[\\]]";
-    private final static String KEY_SEPARATOR_REGEX = "\\.";
+    private static final String KEY_CONTAINS_LIST_REGEX = "^.*[\\[\\d+]]+$";
+    private static final String NUMBER_IN_SQUARE_BRACKETS_REGEX = "\\[\\d+]";
+    private static final String SQUARE_BRACKETS_REGEX = "[\\[\\]]";
+    private static final String KEY_SEPARATOR_REGEX = "\\.";
 
     private final Boolean changeEnv;
 
@@ -65,7 +65,7 @@ class ObjMapper {
         var keys = splitKey(key);
 
         for (String k : keys) {
-            if (isList(k))
+            if (Boolean.TRUE.equals(isList(k)))
                 obj = getObjFromList(obj, k);
             else
                 obj = getObjFromMap(obj, k);
@@ -112,7 +112,7 @@ class ObjMapper {
      */
     private Object getObjFromMap(Object obj, String key) {
         var m = toMap(obj, Object.class);
-        var map = changeEnv ? changeEnv(m) : m;
+        var map = Boolean.TRUE.equals(changeEnv) ? changeEnv(m) : m;
 
         if (!map.containsKey(key))
             throw new InvalidKeyException("This key [" + key + "] does not exist in [" + map + "]");
@@ -140,41 +140,6 @@ class ObjMapper {
         }
 
         return indexes;
-    }
-
-    /**
-     * Change the environment of the specified map.
-     *
-     * @param map The map to change the environment for.
-     * @return The map with its environment changed.
-     */
-    private Map<String, Object> changeEnv(Map<String, Object> map) {
-        var environments = ConfigHandler.getInstance().getEnvironments();
-
-        if (map == null || environments.isEmpty() || !changeEnv)
-            return map;
-
-        var keysWithEnv = map.keySet()
-                .stream()
-                .filter(k -> k.matches(".+@.+"))
-                .toList();
-
-        environments.get().forEach(
-                environment -> keysWithEnv.forEach(
-                        key -> {
-                            var env = "@" + environment;
-                            if (key.endsWith(env)) {
-                                var newKey = key.replace(env, "");
-                                if (!map.containsKey(newKey)) {
-                                    map.put(newKey, map.get(key));
-                                    map.remove(key);
-                                }
-                            }
-                        }
-                )
-        );
-
-        return map;
     }
 
     /**

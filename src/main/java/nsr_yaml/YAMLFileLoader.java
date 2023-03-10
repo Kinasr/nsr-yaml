@@ -24,7 +24,7 @@ import java.util.Map;
  * filePath - the file path of the YAML file
  */
 public class YAMLFileLoader {
-    private final static Map<String, Object> loadedFiles = new HashMap<>();
+    private static final Map<String, Object> loadedFiles = new HashMap<>();
     private final String filePath;
     private final Object data;
 

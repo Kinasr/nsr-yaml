@@ -371,4 +371,10 @@ class YAMLTest {
         assertThatThrownBy(() -> YAML.read("not-exist.yaml"))
                 .isInstanceOf(YAMLFileException.class);
     }
+
+    @Test
+    void customObjectWithEnvInIt() {
+        assertThat(reader.get("person2").as(Person.class))
+                .isEqualTo(new Person().setName("local name"));
+    }
 }
