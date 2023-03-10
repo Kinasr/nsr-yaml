@@ -5,9 +5,9 @@ import exception.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
+import static nsr_yaml.Helper.changeEnv;
 import static nsr_yaml.Parser.toList;
 import static nsr_yaml.Parser.toMap;
 
@@ -140,41 +140,6 @@ class ObjMapper {
         }
 
         return indexes;
-    }
-
-    /**
-     * Change the environment of the specified map.
-     *
-     * @param map The map to change the environment for.
-     * @return The map with its environment changed.
-     */
-    private Map<String, Object> changeEnv(Map<String, Object> map) {
-        var environments = ConfigHandler.getInstance().getEnvironments();
-
-        if (map == null || environments.isEmpty() || !changeEnv)
-            return map;
-
-        var keysWithEnv = map.keySet()
-                .stream()
-                .filter(k -> k.matches(".+@.+"))
-                .toList();
-
-        environments.get().forEach(
-                environment -> keysWithEnv.forEach(
-                        key -> {
-                            var env = "@" + environment;
-                            if (key.endsWith(env)) {
-                                var newKey = key.replace(env, "");
-                                if (!map.containsKey(newKey)) {
-                                    map.put(newKey, map.get(key));
-                                    map.remove(key);
-                                }
-                            }
-                        }
-                )
-        );
-
-        return map;
     }
 
     /**

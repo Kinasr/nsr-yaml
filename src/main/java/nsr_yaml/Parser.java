@@ -13,6 +13,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+import static nsr_yaml.Helper.changeEnv;
+
 /**
  * Parser Class
  * <p>
@@ -475,6 +477,8 @@ public class Parser {
         } catch (ParsingException ignore) {
             throw new ParsingException("Can't parse [" + obj + "] to be " + inst.getClass());
         }
+
+        map = changeEnv(map);
 
         for (Field field : fields) {
             field.setAccessible(true);

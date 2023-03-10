@@ -1,6 +1,7 @@
 package nsr_yaml;
 
 import java.io.File;
+import java.util.Map;
 
 /**
  * <body>
@@ -31,5 +32,40 @@ class Helper {
             return filePath;
 
         return null;
+    }
+
+    /**
+     * Change the environment of the specified map.
+     *
+     * @param map The map to change the environment for.
+     * @return The map with its environment changed.
+     */
+    protected static Map<String, Object> changeEnv(Map<String, Object> map) {
+        var environments = ConfigHandler.getInstance().getEnvironments();
+
+        if (map == null || environments.isEmpty())
+            return map;
+
+        var keysWithEnv = map.keySet()
+                .stream()
+                .filter(k -> k.matches(".+@.+"))
+                .toList();
+
+        environments.get().forEach(
+                environment -> keysWithEnv.forEach(
+                        key -> {
+                            var env = "@" + environment;
+                            if (key.endsWith(env)) {
+                                var newKey = key.replace(env, "");
+                                if (!map.containsKey(newKey)) {
+                                    map.put(newKey, map.get(key));
+                                    map.remove(key);
+                                }
+                            }
+                        }
+                )
+        );
+
+        return map;
     }
 }

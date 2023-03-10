@@ -25,3 +25,8 @@ person:
       age: 10
     - name: Sara
       age: 7
+
+
+person2:
+  name@local: local name
+  name@test_server: test server name
