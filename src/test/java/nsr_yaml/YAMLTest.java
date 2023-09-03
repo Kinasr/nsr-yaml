@@ -2,9 +2,7 @@ package nsr_yaml;
 
 import exception.ParsingException;
 import exception.YAMLFileException;
-import helper.TestInterface;
-import helper.Person;
-import helper.TestRecord;
+import helper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -376,5 +374,18 @@ class YAMLTest {
     void customObjectWithEnvInIt() {
         assertThat(reader.get("person2").as(Person.class))
                 .isEqualTo(new Person().setName("local name"));
+    }
+
+    @Test
+    void readEnum() {
+        assertThat(reader.get("gender").as(Gender.class))
+                .isEqualTo(Gender.MALE);
+    }
+
+    @Test
+    void readEnumByItsValue() {
+        assertThat(reader.get("pet-type").as(PetType.class))
+                .isEqualTo(PetType.CAT);
+
     }
 }

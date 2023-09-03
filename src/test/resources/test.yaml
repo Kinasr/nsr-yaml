@@ -30,3 +30,7 @@ person:
 person2:
   name@local: local name
   name@test_server: test server name
+
+gender: MALE
+
+pet-type: cat
