@@ -336,8 +336,8 @@ class YAMLTest {
 
     @Test
     void getNull() {
-        assertThat(reader.get("n").asObject() == null)
-                .isTrue();
+        assertThat(reader.get("n").asObject())
+                .isNull();
     }
 
     @ParameterizedTest
@@ -350,7 +350,8 @@ class YAMLTest {
 
     @Test
     void getInterface() {
-        var thrown = catchThrowableOfType(() -> reader.get().as(TestInterface.class),
+        var yaml = reader.get();
+        var thrown = catchThrowableOfType(() -> yaml.as(TestInterface.class),
                 ParsingException.class);
 
         assertThat(thrown.getMessage()).isEqualTo("Interfaces can not be initialized");
@@ -358,7 +359,8 @@ class YAMLTest {
 
     @Test
     void getRecord() {
-        var thrown = catchThrowableOfType(() -> reader.get().as(TestRecord.class),
+        var yaml = reader.get();
+        var thrown = catchThrowableOfType(() -> yaml.as(TestRecord.class),
                 ParsingException.class);
 
         assertThat(thrown.getMessage()).isEqualTo("Records are not supported");
@@ -382,6 +384,7 @@ class YAMLTest {
                 .isEqualTo(Gender.MALE);
     }
 
+    // FIXME: 09/03/2023 Ensure that this Enum [helper.PetType] contains this value [cat]
     @Test
     void readEnumByItsValue() {
         assertThat(reader.get("pet-type").as(PetType.class))
