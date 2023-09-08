@@ -20,17 +20,9 @@ public class Person {
     public Person() {
     }
 
-    public String getName() {
-        return name;
-    }
-
     public Person setName(String name) {
         this.name = name;
         return this;
-    }
-
-    public Integer getAge() {
-        return age;
     }
 
     public Person setAge(Integer age) {
@@ -38,17 +30,9 @@ public class Person {
         return this;
     }
 
-    public List<Person> getChildren() {
-        return children;
-    }
-
     public Person setChildren(List<Person> children) {
         this.children = children;
         return this;
-    }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
     }
 
     public Person setDateOfBirth(LocalDate dateOfBirth) {
@@ -56,26 +40,14 @@ public class Person {
         return this;
     }
 
-    public Gender getGender() {
-        return gender;
-    }
-
     public Person setGender(Gender gender) {
         this.gender = gender;
         return this;
     }
 
-    public Map<String, Pet> getPets() {
-        return pets;
-    }
-
     public Person setPets(Map<String, Pet> pets) {
         this.pets = pets;
         return this;
-    }
-
-    public String getNickName() {
-        return nickName;
     }
 
     public Person setNickName(String nickName) {
