@@ -1,4 +1,4 @@
-package exception;
+package kinasr.nsr_yaml.exception;
 
 /**
  * YAMLFileException Class

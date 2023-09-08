@@ -1,11 +1,9 @@
-package nsr_yaml;
+package kinasr.nsr_yaml.core;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-
-import static nsr_yaml.Parser.*;
 
 /**
  * Class YAMLObj
@@ -39,7 +37,7 @@ public class YAMLObj extends YAMLObject {
      * @return The Boolean representation of the stored data.
      */
     public Boolean asBoolean() {
-        return toBoolean(data);
+        return Parser.toBoolean(data);
     }
 
     /**
@@ -48,7 +46,7 @@ public class YAMLObj extends YAMLObject {
      * @return The Byte representation of the stored data.
      */
     public Byte asByte() {
-        return toByte(data);
+        return Parser.toByte(data);
     }
 
     /**
@@ -57,7 +55,7 @@ public class YAMLObj extends YAMLObject {
      * @return The Short representation of the stored data.
      */
     public Short asShort() {
-        return toShort(data);
+        return Parser.toShort(data);
     }
 
     /**
@@ -66,7 +64,7 @@ public class YAMLObj extends YAMLObject {
      * @return The Integer representation of the stored data.
      */
     public Integer asInteger() {
-        return toInteger(data);
+        return Parser.toInteger(data);
     }
 
     /**
@@ -75,7 +73,7 @@ public class YAMLObj extends YAMLObject {
      * @return The Long representation of the stored data.
      */
     public Long asLong() {
-        return toLong(data);
+        return Parser.toLong(data);
     }
 
     /**
@@ -84,7 +82,7 @@ public class YAMLObj extends YAMLObject {
      * @return The Float representation of the stored data.
      */
     public Float asFloat() {
-        return toFloat(data);
+        return Parser.toFloat(data);
     }
 
     /**
@@ -93,7 +91,7 @@ public class YAMLObj extends YAMLObject {
      * @return The Double representation of the stored data.
      */
     public Double asDouble() {
-        return toDouble(data);
+        return Parser.toDouble(data);
     }
 
     /**
@@ -102,7 +100,7 @@ public class YAMLObj extends YAMLObject {
      * @return The LocalDate representation of the stored data.
      */
     public LocalDate asLocalDate() {
-        return toLocalDate(data, null);
+        return Parser.toLocalDate(data, null);
     }
 
     /**
@@ -112,7 +110,7 @@ public class YAMLObj extends YAMLObject {
      * @return The LocalDate representation of the stored data.
      */
     public LocalDate asLocalDate(String pattern) {
-        return toLocalDate(data, pattern);
+        return Parser.toLocalDate(data, pattern);
     }
 
     /**
@@ -121,7 +119,7 @@ public class YAMLObj extends YAMLObject {
      * @return The LocalTime representation of the stored data.
      */
     public LocalTime asLocalTime() {
-        return toLocalTime(data, null);
+        return Parser.toLocalTime(data, null);
     }
 
     /**
@@ -131,7 +129,7 @@ public class YAMLObj extends YAMLObject {
      * @return The LocalTime representation of the stored data.
      */
     public LocalTime asLocalTime(String pattern) {
-        return toLocalTime(data, pattern);
+        return Parser.toLocalTime(data, pattern);
     }
 
     /**
@@ -140,7 +138,7 @@ public class YAMLObj extends YAMLObject {
      * @return The LocalDateTime representation of the stored data.
      */
     public LocalDateTime asLocalDateTime() {
-        return toLocalDateTime(data, null);
+        return Parser.toLocalDateTime(data, null);
     }
 
     /**
@@ -150,7 +148,7 @@ public class YAMLObj extends YAMLObject {
      * @return The LocalDateTime representation of the stored data.
      */
     public LocalDateTime asLocalDateTime(String pattern) {
-        return toLocalDateTime(data, pattern);
+        return Parser.toLocalDateTime(data, pattern);
     }
 
     /**
@@ -159,7 +157,7 @@ public class YAMLObj extends YAMLObject {
      * @return The ZonedDateTime representation of the stored data.
      */
     public ZonedDateTime asZonedDateTime() {
-        return toZonedDateTime(data, null);
+        return Parser.toZonedDateTime(data, null);
     }
 
     /**
@@ -169,6 +167,6 @@ public class YAMLObj extends YAMLObject {
      * @return The ZonedDateTime representation of the stored data.
      */
     public ZonedDateTime asZonedDateTime(String pattern) {
-        return toZonedDateTime(data, pattern);
+        return Parser.toZonedDateTime(data, pattern);
     }
 }

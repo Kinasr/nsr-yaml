@@ -1,6 +1,7 @@
-package nsr_yaml;
+package kinasr.nsr_yaml.core;
 
-import exception.YAMLFileException;
+import kinasr.nsr_yaml.core.YAMLFileLoader;
+import kinasr.nsr_yaml.exception.YAMLFileException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,7 +1,10 @@
-package nsr_yaml;
+package kinasr.nsr_yaml.core;
 
-import exception.InvalidKeyException;
-import exception.ParsingException;
+import kinasr.nsr_yaml.core.ConfigHandler;
+import kinasr.nsr_yaml.core.ObjMapper;
+import kinasr.nsr_yaml.core.YAMLReader;
+import kinasr.nsr_yaml.exception.InvalidKeyException;
+import kinasr.nsr_yaml.exception.ParsingException;
 import helper.Gender;
 import helper.NotContainsNoArgumentsConstructor;
 import helper.Person;

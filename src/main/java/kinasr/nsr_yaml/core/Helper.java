@@ -1,4 +1,4 @@
-package nsr_yaml;
+package kinasr.nsr_yaml.core;
 
 import java.io.File;
 import java.util.Map;

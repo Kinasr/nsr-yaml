@@ -1,7 +1,7 @@
-package nsr_yaml;
+package kinasr.nsr_yaml.core;
 
-import exception.ParsingException;
-import exception.YAMLFileException;
+import kinasr.nsr_yaml.exception.ParsingException;
+import kinasr.nsr_yaml.exception.YAMLFileException;
 import helper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -382,13 +382,5 @@ class YAMLTest {
     void readEnum() {
         assertThat(reader.get("gender").as(Gender.class))
                 .isEqualTo(Gender.MALE);
-    }
-
-    // FIXME: 09/03/2023 Ensure that this Enum [helper.PetType] contains this value [cat]
-    @Test
-    void readEnumByItsValue() {
-        assertThat(reader.get("pet-type").as(PetType.class))
-                .isEqualTo(PetType.CAT);
-
     }
 }

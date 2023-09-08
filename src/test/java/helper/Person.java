@@ -1,6 +1,6 @@
 package helper;
 
-import annotation.Alias;
+import kinasr.nsr_yaml.annotation.Alias;
 
 import java.time.LocalDate;
 import java.util.List;

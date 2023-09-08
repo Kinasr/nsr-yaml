@@ -1,6 +1,6 @@
-package nsr_yaml;
+package kinasr.nsr_yaml.core;
 
-import exception.YAMLFileException;
+import kinasr.nsr_yaml.exception.YAMLFileException;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;

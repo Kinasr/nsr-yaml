@@ -1,12 +1,10 @@
-package nsr_yaml;
+package kinasr.nsr_yaml.core;
 
-import exception.InvalidKeyException;
+import kinasr.nsr_yaml.exception.InvalidKeyException;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-
-import static nsr_yaml.Helper.isFileExist;
 
 /**
  * <body>
@@ -115,7 +113,7 @@ class ConfigHandler {
 
         for (String name : possibleNames) {
             var filePath = rootPath + name;
-            if (isFileExist(filePath) != null)
+            if (Helper.isFileExist(filePath) != null)
                 return filePath;
         }
 
