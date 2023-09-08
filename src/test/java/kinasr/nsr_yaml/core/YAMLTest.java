@@ -1,10 +1,8 @@
-package nsr_yaml;
+package kinasr.nsr_yaml.core;
 
-import exception.ParsingException;
-import exception.YAMLFileException;
-import helper.TestInterface;
-import helper.Person;
-import helper.TestRecord;
+import kinasr.nsr_yaml.exception.ParsingException;
+import kinasr.nsr_yaml.exception.YAMLFileException;
+import helper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -338,8 +336,8 @@ class YAMLTest {
 
     @Test
     void getNull() {
-        assertThat(reader.get("n").asObject() == null)
-                .isTrue();
+        assertThat(reader.get("n").asObject())
+                .isNull();
     }
 
     @ParameterizedTest
@@ -352,7 +350,8 @@ class YAMLTest {
 
     @Test
     void getInterface() {
-        var thrown = catchThrowableOfType(() -> reader.get().as(TestInterface.class),
+        var yaml = reader.get();
+        var thrown = catchThrowableOfType(() -> yaml.as(TestInterface.class),
                 ParsingException.class);
 
         assertThat(thrown.getMessage()).isEqualTo("Interfaces can not be initialized");
@@ -360,7 +359,8 @@ class YAMLTest {
 
     @Test
     void getRecord() {
-        var thrown = catchThrowableOfType(() -> reader.get().as(TestRecord.class),
+        var yaml = reader.get();
+        var thrown = catchThrowableOfType(() -> yaml.as(TestRecord.class),
                 ParsingException.class);
 
         assertThat(thrown.getMessage()).isEqualTo("Records are not supported");
@@ -376,5 +376,11 @@ class YAMLTest {
     void customObjectWithEnvInIt() {
         assertThat(reader.get("person2").as(Person.class))
                 .isEqualTo(new Person().setName("local name"));
+    }
+
+    @Test
+    void readEnum() {
+        assertThat(reader.get("gender").as(Gender.class))
+                .isEqualTo(Gender.MALE);
     }
 }

@@ -1,6 +1,6 @@
-package nsr_yaml;
+package kinasr.nsr_yaml.core;
 
-import exception.InvalidKeyException;
+import kinasr.nsr_yaml.exception.InvalidKeyException;
 
 /**
  * Class YAMLReader

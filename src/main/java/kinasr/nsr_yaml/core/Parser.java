@@ -1,7 +1,7 @@
-package nsr_yaml;
+package kinasr.nsr_yaml.core;
 
-import annotation.Alias;
-import exception.ParsingException;
+import kinasr.nsr_yaml.annotation.Alias;
+import kinasr.nsr_yaml.exception.ParsingException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -12,8 +12,6 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-
-import static nsr_yaml.Helper.changeEnv;
 
 /**
  * Parser Class
@@ -482,7 +480,7 @@ public class Parser {
             throw new ParsingException(parsingErrorMsg(obj, inst.getClass().toString()));
         }
 
-        map = changeEnv(map);
+        map = Helper.changeEnv(map);
 
         for (Field field : fields) {
             field.setAccessible(true);

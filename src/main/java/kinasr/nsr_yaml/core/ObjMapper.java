@@ -1,15 +1,11 @@
-package nsr_yaml;
+package kinasr.nsr_yaml.core;
 
-import exception.InvalidKeyException;
+import kinasr.nsr_yaml.exception.InvalidKeyException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import static nsr_yaml.Helper.changeEnv;
-import static nsr_yaml.Parser.toList;
-import static nsr_yaml.Parser.toMap;
 
 /**
  * <body>
@@ -91,7 +87,7 @@ class ObjMapper {
             obj = getObjFromMap(obj, key);
 
         for (Integer index : indexes) {
-            var list = toList(obj, Object.class);
+            var list = Parser.toList(obj, Object.class);
 
             if (index >= list.size())
                 throw new InvalidKeyException("This index [" + index + "] is out of the boundary of [" + list + "]");
@@ -111,8 +107,8 @@ class ObjMapper {
      * @throws InvalidKeyException If the specified key does not exist in the map.
      */
     private Object getObjFromMap(Object obj, String key) {
-        var m = toMap(obj, Object.class);
-        var map = Boolean.TRUE.equals(changeEnv) ? changeEnv(m) : m;
+        var m = Parser.toMap(obj, Object.class);
+        var map = Boolean.TRUE.equals(changeEnv) ? Helper.changeEnv(m) : m;
 
         if (!map.containsKey(key))
             throw new InvalidKeyException("This key [" + key + "] does not exist in [" + map + "]");

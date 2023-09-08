@@ -1,11 +1,9 @@
-package nsr_yaml;
+package kinasr.nsr_yaml.core;
 
-import exception.ParsingException;
+import kinasr.nsr_yaml.exception.ParsingException;
 
 import java.util.List;
 import java.util.Map;
-
-import static nsr_yaml.Parser.*;
 
 /**
  * Class YAMLObject
@@ -68,7 +66,7 @@ public class YAMLObject {
      */
     public <T> List<T> asList(Class<T> clazz) {
         validateClazz(clazz);
-        return toList(data, clazz);
+        return Parser.toList(data, clazz);
     }
 
     /**
@@ -89,7 +87,7 @@ public class YAMLObject {
      */
     public <T> Map<String, T> asMap(Class<T> clazz) {
         validateClazz(clazz);
-        return toMap(data, clazz);
+        return Parser.toMap(data, clazz);
     }
 
     /**
@@ -101,7 +99,7 @@ public class YAMLObject {
      */
     public <T> T as(Class<T> clazz) {
         validateClazz(clazz);
-        return to(data, clazz, null);
+        return Parser.to(data, clazz, null);
     }
 
     /**
