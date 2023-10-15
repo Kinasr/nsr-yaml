@@ -1,6 +1,5 @@
 package kinasr.nsr_yaml.core;
 
-import kinasr.nsr_yaml.core.YAMLFileLoader;
 import kinasr.nsr_yaml.exception.YAMLFileException;
 import org.junit.jupiter.api.Test;
 
