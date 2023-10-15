@@ -1,14 +1,11 @@
 package kinasr.nsr_yaml.core;
 
-import kinasr.nsr_yaml.core.ConfigHandler;
-import kinasr.nsr_yaml.core.ObjMapper;
-import kinasr.nsr_yaml.core.YAMLReader;
-import kinasr.nsr_yaml.exception.InvalidKeyException;
-import kinasr.nsr_yaml.exception.ParsingException;
 import helper.Gender;
 import helper.NotContainsNoArgumentsConstructor;
 import helper.Person;
 import helper.Pet;
+import kinasr.nsr_yaml.exception.InvalidKeyException;
+import kinasr.nsr_yaml.exception.ParsingException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +30,17 @@ import static org.mockito.Mockito.doReturn;
 class YAMLReaderTest {
     @Mock
     ConfigHandler configHandler;
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void getWithNullKey(String key) {
+        var thrown = catchThrowableOfType(
+                () -> new YAMLReader("", new ObjMapper(false)).get(key),
+                InvalidKeyException.class
+        );
+        assertThat(thrown.getMessage())
+                .isEqualTo("Key can't be null or empty");
+    }
 
     @Nested
     class All {
@@ -1958,16 +1966,5 @@ class YAMLReaderTest {
 
     @Nested
     class Environments {
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void getWithNullKey(String key) {
-        var thrown = catchThrowableOfType(
-                () -> new YAMLReader("", new ObjMapper(false)).get(key),
-                InvalidKeyException.class
-        );
-        assertThat(thrown.getMessage())
-                .isEqualTo("Key can't be null or empty");
     }
 }

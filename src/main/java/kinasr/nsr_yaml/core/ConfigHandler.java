@@ -95,7 +95,7 @@ class ConfigHandler {
     /**
      * Returns the list of environments.
      *
-     * @return Optional<List<String>> The list of environments, or an empty Optional
+     * @return Optional<List < String>> The list of environments, or an empty Optional
      * if the value is not present.
      */
     protected Optional<List<String>> getEnvironments() {
@@ -125,9 +125,9 @@ class ConfigHandler {
      * to read the value.
      *
      * @param config The configuration record to fetch.
-     * @param read The function to read the value of the key.
+     * @param read   The function to read the value of the key.
+     * @param <T>    type
      * @return Optional<T> The value of the key, or an empty Optional if the value is not present.
-     * @param <T> type
      */
     private <T> Optional<T> fetchData(ConfigRecord<T> config, Function<String, T> read) {
         if (reader != null && !config.isFetched)

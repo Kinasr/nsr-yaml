@@ -8,6 +8,9 @@ import kinasr.nsr_yaml.exception.YAMLFileException;
  */
 public class YAML {
 
+    private YAML() {
+    }
+
     /**
      * Reads a YAML file and returns a `YAMLReader` instance.
      *
@@ -32,6 +35,4 @@ public class YAML {
 
         return new YAMLReader(YAMLFileLoader.load(filePath), new ObjMapper(changeEnv));
     }
-
-    private YAML() {}
 }

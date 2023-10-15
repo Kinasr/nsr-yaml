@@ -1,8 +1,11 @@
 package kinasr.nsr_yaml.core;
 
+import helper.Gender;
+import helper.Person;
+import helper.TestInterface;
+import helper.TestRecord;
 import kinasr.nsr_yaml.exception.ParsingException;
 import kinasr.nsr_yaml.exception.YAMLFileException;
-import helper.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
