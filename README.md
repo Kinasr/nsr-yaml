@@ -21,7 +21,7 @@ A light-wight library provides easy and customizable ways to read data from YAML
 
 ### 2. Hello World
 
-- Start by creating a YAML file within your project, for example, path/hello.yaml. Add the following content:
+- Start by creating a YAML file within your project, for example, `path/hello.yaml`. Add the following content:
   ```yaml
   helloWorld: Hello World
   ```
@@ -38,7 +38,7 @@ A light-wight library provides easy and customizable ways to read data from YAML
 
 ## Configuration
 
-Optionally, you can include a `nsr_config.yaml configuration file in your project's `src/main/resources/` directory.
+Optionally, you can include a `nsr_config.yaml` configuration file in your project's `src/main/resources/` directory.
 
   ```yaml
   date-config:
@@ -52,13 +52,22 @@ Optionally, you can include a `nsr_config.yaml configuration file in your projec
     - production 
    ```
 
-In the configuration file, you can customize default date and time patterns. Additionally, the "environments" feature allows you to modify YAML key-value pairs based on the environment.
-For example, the following YAML file would print "Hello from local" if the environment is local and "Hello from production" if the environment is production:
+In the configuration file, you can customize default date and time patterns. Additionally, the "environments" feature allows you to modify YAML key-value pairs based on the environment.  
+For example, the following code would print "Hello from local" if the environment is local and "Hello from production" if the environment is production:
 
 ```yaml
 hello@local: Hello from local
 hello@production: Hello from production
 ```
+```java
+  public class HelloWorld {
+    public static void main(String[] args) {
+        var helloWorld = YAML.read("path/hello.yaml").get("hello").asString();
+        
+        System.out.println(helloWorld);
+    }
+  }
+  ```
 
 ## Conclusion
 
