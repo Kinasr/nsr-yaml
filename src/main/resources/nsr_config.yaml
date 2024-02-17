@@ -4,6 +4,7 @@ date-config:
   date-time-pattern: "yyyy-MM-dd HH:mm:ss"
   zoned-date-time-pattern: "yyyy-MM-dd HH:mm:ss Z"
 
+# The first environment can be configured dynamically using the command-line property 'NSR_ENV'.
 environments:
   - local
   - test_server
