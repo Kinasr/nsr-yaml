@@ -99,7 +99,16 @@ class ConfigHandler {
      * if the value is not present.
      */
     protected Optional<List<String>> getEnvironments() {
-        return fetchData(environments, key -> reader.get(key).asList(String.class));
+        var propertyEnv = System.getProperty(Helper.NSR_ENV);
+        var envInConfig = fetchData(environments, key -> reader.get(key).asList(String.class))
+                .orElse(List.of());
+
+        if (propertyEnv != null){
+            envInConfig.remove(propertyEnv);
+            envInConfig.add(0, propertyEnv);
+        }
+
+        return Optional.of(envInConfig);
     }
 
     /**

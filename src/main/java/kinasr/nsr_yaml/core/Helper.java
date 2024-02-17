@@ -16,6 +16,7 @@ import java.util.Map;
  * </body>
  */
 class Helper {
+    public static final String NSR_ENV = "NSR_ENV";
 
     private Helper() {
     }
