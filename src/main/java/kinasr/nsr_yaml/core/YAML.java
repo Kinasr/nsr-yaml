@@ -33,6 +33,10 @@ public class YAML {
         if (filePath == null || filePath.isEmpty() || filePath.isBlank())
             throw new YAMLFileException("File path can't be null or empty");
 
+        var fileData = YAMLFileLoader.load(filePath);
+        if (fileData == null)
+            throw new YAMLFileException("Can not read empty file at path: " + filePath);
+
         return new YAMLReader(YAMLFileLoader.load(filePath), new ObjMapper(changeEnv));
     }
 }
