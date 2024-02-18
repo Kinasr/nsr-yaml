@@ -8,7 +8,8 @@ A light-wight library provides easy and customizable ways to read data from YAML
 
 ### 1. Installation
 
-- Learn how to install a Maven package from GitHub by visiting [this link](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package).
+- Learn how to install a Maven package from GitHub by
+  visiting [this link](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package).
 - Add this library as a dependency in your project's pom.xml file:
     ``` xml
     <dependency>
@@ -52,13 +53,16 @@ Optionally, you can include a `nsr_config.yaml` configuration file in your proje
     - production 
    ```
 
-In the configuration file, you can customize default date and time patterns. Additionally, the "environments" feature allows you to modify YAML key-value pairs based on the environment.  
-For example, the following code would print "Hello from local" if the environment is local and "Hello from production" if the environment is production:
+In the configuration file, you can customize default date and time patterns. Additionally, the "environments" feature
+allows you to modify YAML key-value pairs based on the environment.  
+For example, the following code would print "Hello from local" if the environment is local and "Hello from production"
+if the environment is production:
 
 ```yaml
 hello@local: Hello from local
 hello@production: Hello from production
 ```
+
 ```java
   public class HelloWorld {
     public static void main(String[] args) {
@@ -71,5 +75,7 @@ hello@production: Hello from production
 
 ## Conclusion
 
-NSR-YAML is a lightweight and easy-to-use library for reading data from YAML files in Java. 
-It provides a number of features to make it easy to customize the way that YAML data is read, including the ability to change the default date and time patterns and to use the environments feature to change the YAML key value depending on the environment.
+NSR-YAML is a lightweight and easy-to-use library for reading data from YAML files in Java.
+It provides a number of features to make it easy to customize the way that YAML data is read, including the ability to
+change the default date and time patterns and to use the environments feature to change the YAML key value depending on
+the environment.

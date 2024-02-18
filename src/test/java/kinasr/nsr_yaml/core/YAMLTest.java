@@ -386,4 +386,10 @@ class YAMLTest {
         assertThat(reader.get("gender").as(Gender.class))
                 .isEqualTo(Gender.MALE);
     }
+
+    @Test
+    void loadingEmptyFile() {
+        assertThatThrownBy(() -> YAML.read("empty.yaml"))
+                .isInstanceOf(YAMLFileException.class);
+    }
 }

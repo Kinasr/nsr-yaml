@@ -2,6 +2,7 @@ package kinasr.nsr_yaml.core;
 
 import kinasr.nsr_yaml.exception.InvalidKeyException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -18,7 +19,7 @@ import java.util.function.Function;
  * <body/>
  */
 class ConfigHandler {
-    private static final ConfigHandler instance = new ConfigHandler();
+    private static ConfigHandler instance;
     private final YAMLReader reader;
     private final ConfigRecord<String> dateConfigDatePattern = new ConfigRecord<>("date-config.date-pattern");
     private final ConfigRecord<String> dateConfigTimePattern = new ConfigRecord<>("date-config.time-pattern");
@@ -49,6 +50,8 @@ class ConfigHandler {
      * @return ConfigHandler The singleton instance of the ConfigHandler class.
      */
     protected static ConfigHandler getInstance() {
+        if (instance == null)
+            instance = new ConfigHandler();
         return instance;
     }
 
@@ -101,9 +104,9 @@ class ConfigHandler {
     protected Optional<List<String>> getEnvironments() {
         var propertyEnv = System.getProperty(Helper.NSR_ENV);
         var envInConfig = fetchData(environments, key -> reader.get(key).asList(String.class))
-                .orElse(List.of());
+                .orElse(new ArrayList<>());
 
-        if (propertyEnv != null){
+        if (propertyEnv != null) {
             envInConfig.remove(propertyEnv);
             envInConfig.add(0, propertyEnv);
         }
@@ -116,7 +119,7 @@ class ConfigHandler {
      *
      * @return String The path to the configuration file if it is found, otherwise null.
      */
-    private String findFileName() {
+    String findFileName() {
         var rootPath = "src/main/resources/";
         var possibleNames = List.of("nsr_config.yaml", "nsr_config.yml", "config.yaml", "config.yml");
 
@@ -138,7 +141,7 @@ class ConfigHandler {
      * @param <T>    type
      * @return Optional<T> The value of the key, or an empty Optional if the value is not present.
      */
-    private <T> Optional<T> fetchData(ConfigRecord<T> config, Function<String, T> read) {
+    <T> Optional<T> fetchData(ConfigRecord<T> config, Function<String, T> read) {
         if (reader != null && !config.isFetched)
             try {
                 config.value = read.apply(config.key);
