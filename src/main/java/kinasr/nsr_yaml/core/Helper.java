@@ -1,6 +1,7 @@
 package kinasr.nsr_yaml.core;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -43,6 +44,7 @@ class Helper {
      */
     protected static Map<String, Object> changeEnv(Map<String, Object> map) {
         var environments = ConfigHandler.getInstance().getEnvironments();
+        var changedKeys = new HashSet<String>();
 
         if (map == null || environments.isEmpty())
             return map;
@@ -52,20 +54,17 @@ class Helper {
                 .filter(k -> k.matches(".+@.+"))
                 .toList();
 
-        environments.get().forEach(
-                environment -> keysWithEnv.forEach(
-                        key -> {
-                            var env = "@" + environment;
-                            if (key.endsWith(env)) {
-                                var newKey = key.replace(env, "");
-                                if (!map.containsKey(newKey)) {
-                                    map.put(newKey, map.get(key));
-                                    map.remove(key);
-                                }
-                            }
-                        }
-                )
-        );
+        for (String environment : environments.get()) {
+            var env = "@" + environment;
+            for (String key : keysWithEnv) {
+                var newKey = key.replace(env, "");
+                if (key.endsWith(env) && !changedKeys.contains(newKey)) {
+                    map.put(newKey, map.get(key));
+                    map.remove(key);
+                    changedKeys.add(newKey);
+                }
+            }
+        }
 
         return map;
     }

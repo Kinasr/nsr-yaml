@@ -67,10 +67,10 @@ hello@production: Hello from production
   public class HelloWorld {
     public static void main(String[] args) {
         var helloWorld = YAML.read("path/hello.yaml").get("hello").asString();
-        
+
         System.out.println(helloWorld);
     }
-  }
+}
   ```
 
 ## Conclusion
