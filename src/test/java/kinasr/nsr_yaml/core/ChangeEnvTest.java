@@ -7,10 +7,12 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static kinasr.nsr_yaml.core.Helper.changeEnv;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.doReturn;
 
@@ -142,4 +144,85 @@ public class ChangeEnvTest {
 
         assertThat(date).isEqualTo("Default value");
     }
+
+    @Test
+    void testChangeEnv_withNullMap_returnsOriginalMap() {
+        // Arrange
+        Map<String, Object> map = null;
+
+        // Act
+        Map<String, Object> result = changeEnv(map);
+
+        // Assert
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void testChangeEnv_withEmptyEnvironments_returnsOriginalMap() {
+        // Arrange
+        Map<String, Object> map = new HashMap<>();
+        map.put("key1", "value1");
+
+        MockedStatic<ConfigHandler> config = Mockito.mockStatic(ConfigHandler.class);
+        config.when(ConfigHandler::getInstance)
+                .thenReturn(configHandler);
+        doReturn(Optional.empty())
+                .when(configHandler)
+                .getEnvironments();
+
+        // Act
+        Map<String, Object> result = changeEnv(map);
+        config.close();
+
+        // Assert
+        assertThat(result).isEqualTo(map);
+    }
+
+    @Test
+    void testChangeEnv_withMultipleEnvironmentsAndKeys_changesKeys() {
+        // Arrange
+        Map<String, Object> map = new HashMap<>();
+        map.put("key1@dev", "value1");
+        map.put("key2@prod", "value2");
+        map.put("key3@dev", "value3");
+
+        MockedStatic<ConfigHandler> config = Mockito.mockStatic(ConfigHandler.class);
+        config.when(ConfigHandler::getInstance)
+                .thenReturn(configHandler);
+        doReturn(Optional.of(List.of("dev", "prod")))
+                .when(configHandler)
+                .getEnvironments();
+
+        // Act
+        Map<String, Object> result = changeEnv(map);
+        config.close();
+
+        // Assert
+        assertThat(result)
+                .isEqualTo(Map.of("key1", "value1", "key2", "value2", "key3", "value3"));
+    }
+
+    @Test
+    void testChangeEnv_withNoMatchingKeys_returnsOriginalMap() {
+        // Arrange
+        Map<String, Object> map = new HashMap<>();
+        map.put("key1", "value1");
+        map.put("key2", "value2");
+
+        MockedStatic<ConfigHandler> config = Mockito.mockStatic(ConfigHandler.class);
+        config.when(ConfigHandler::getInstance)
+                .thenReturn(configHandler);
+        doReturn(Optional.of(List.of("dev", "prod")))
+                .when(configHandler)
+                .getEnvironments();
+
+        // Act
+        Map<String, Object> result = changeEnv(map);
+        config.close();
+
+        // Assert
+        assertThat(result).isEqualTo(map);
+    }
+
+
 }
