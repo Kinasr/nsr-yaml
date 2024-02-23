@@ -6,7 +6,7 @@
 
     <groupId>io.github.kinasr</groupId>
     <artifactId>nsr-yaml</artifactId>
-    <version>0.0.5-beta</version>
+    <version>0.0.6-beta</version>
     <name>NSR-YAML</name>
     <description>A library provides easy and customizable ways to read data from YAML files.</description>
     <url>https://github.com/Kinasr/nsr-yaml</url>
