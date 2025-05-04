@@ -15,7 +15,7 @@ A light-wight library provides easy and customizable ways to read data from YAML
     <dependency>
         <groupId>io.github.kinasr</groupId>
         <artifactId>nsr-yaml</artifactId>
-        <version>0.0.6-beta</version>
+        <version>1.0.0</version>
     </dependency>
   ```
 - Run `mvn install` to ensure the library is installed.
