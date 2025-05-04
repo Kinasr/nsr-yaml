@@ -13,17 +13,11 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+
 /**
- * Parser Class
- * <p>
- * The Parser class is a utility class for converting an Object to a specified Class of type T.
- * <p>
- * Fields
- * parsingMap - a static final Map of Class objects to Functions for parsing Objects
- * to the specified Class.
- * <p>
- * Constructor
- * Parser - a private constructor for the Parser class.
+ * The `Parser` class provides static utility methods for converting objects to different types.
+ * It includes support for basic types, collections, enums, and date/time-related conversions.
+ * If the conversion fails, a `ParsingException` is thrown as appropriate.
  */
 public class Parser {
     private static final Map<Class<?>, Function<Object, ?>> parsingMap = new HashMap<>();
@@ -480,7 +474,7 @@ public class Parser {
             throw new ParsingException(parsingErrorMsg(obj, inst.getClass().toString()));
         }
 
-        map = Helper.changeEnv(map);
+        map = Helper.applyEnvironmentVariables(map);
 
         for (Field field : fields) {
             field.setAccessible(true);

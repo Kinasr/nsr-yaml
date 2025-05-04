@@ -1,71 +1,108 @@
 package kinasr.nsr_yaml.core;
-
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
- * <body>
- * <h1>Helper Class</h1>
- * <p>The Helper class contains a method that checks if a specified file exists at a given file path.</p>
- * <br/>
- * <h2>Constructor</h2>
- * <pre>
- *     private Helper() {}
- *     </pre>
- * <p>The constructor is private and not accessible from outside the class, making the Helper class a singleton.</p>
- * </body>
+ * Helper class contains utility methods for validating file paths and applying
+ * environment-specific configurations to maps. This class is designed to be
+ * non-instantiable.
  */
 class Helper {
     public static final String NSR_ENV = "NSR_ENV";
-
+    private static final String ENV_KEY_PATTERN = ".+@.+";
+    
     private Helper() {
+        // Private constructor to prevent instantiation
     }
-
+    
     /**
-     * Checks if the specified file exists at the given file path.
+     * Validates if the specified file exists at the given file path.
      *
-     * @param filePath The file path.
+     * @param filePath The file path to validate.
      * @return String The file path if the file exists, null otherwise.
      */
-    protected static String isFileExist(String filePath) {
-        var f = new File(filePath);
-        if (f.exists() && !f.isDirectory())
+    protected static String validateFilePath(String filePath) {
+        var file = new File(filePath);
+        if (file.exists() && !file.isDirectory()) {
             return filePath;
-
+        }
         return null;
     }
-
+    
     /**
-     * Change the environment of the specified map.
+     * Apply environment-specific configurations to the map.
      *
-     * @param map The map to change the environment for.
-     * @return The map with its environment changed.
+     * @param map The map to apply environment configurations to.
+     * @return The map with environment-specific configurations applied.
      */
-    protected static Map<String, Object> changeEnv(Map<String, Object> map) {
-        var environments = ConfigHandler.getInstance().getEnvironments();
-        var changedKeys = new HashSet<String>();
-
-        if (map == null || environments.isEmpty())
+    protected static Map<String, Object> applyEnvironmentVariables(Map<String, Object> map) {
+        if (map == null) {
             return map;
-
-        var keysWithEnv = map.keySet()
-                .stream()
-                .filter(k -> k.matches(".+@.+"))
-                .toList();
-
-        for (String environment : environments.get()) {
-            var env = "@" + environment;
-            for (String key : keysWithEnv) {
-                var newKey = key.replace(env, "");
-                if (key.endsWith(env) && !changedKeys.contains(newKey)) {
-                    map.put(newKey, map.get(key));
-                    map.remove(key);
-                    changedKeys.add(newKey);
-                }
-            }
         }
-
+        
+        Optional<List<String>> environments = ConfigHandler.getInstance().getEnvironments();
+        if (environments.isEmpty()) {
+            return map;
+        }
+        
+        List<String> environmentList = environments.get();
+        List<String> keysWithEnv = findKeysWithEnvironmentSuffix(map);
+        
+        HashSet<String> changedKeys = new HashSet<>();
+        
+        for (String environment : environmentList) {
+            applyEnvironmentOverrides(map, keysWithEnv, changedKeys, environment);
+        }
+        
         return map;
+    }
+    
+    /**
+     * Finds all keys in the map that have an environment suffix.
+     *
+     * @param map The map to search in.
+     * @return List of keys with environment suffixes.
+     */
+    private static List<String> findKeysWithEnvironmentSuffix(Map<String, Object> map) {
+        return map.keySet()
+                .stream()
+                .filter(k -> k.matches(ENV_KEY_PATTERN))
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Applies environment-specific overrides to the configuration map.
+     *
+     * @param map The configuration map to modify.
+     * @param keysWithEnv List of keys with environment suffixes.
+     * @param changedKeys Set of keys that have already been processed.
+     * @param environment The current environment to apply.
+     */
+    private static void applyEnvironmentOverrides(
+            Map<String, Object> map, 
+            List<String> keysWithEnv, 
+            HashSet<String> changedKeys, 
+            String environment) {
+        
+        String envSuffix = "@" + environment;
+        
+        for (String key : keysWithEnv) {
+            if (!key.endsWith(envSuffix)) {
+                continue;
+            }
+            
+            String baseKey = key.replace(envSuffix, "");
+            if (changedKeys.contains(baseKey)) {
+                continue;
+            }
+            
+            map.put(baseKey, map.get(key));
+            map.remove(key);
+            changedKeys.add(baseKey);
+        }
     }
 }

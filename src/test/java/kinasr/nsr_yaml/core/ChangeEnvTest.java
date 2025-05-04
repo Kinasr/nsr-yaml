@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static kinasr.nsr_yaml.core.Helper.changeEnv;
+import static kinasr.nsr_yaml.core.Helper.applyEnvironmentVariables;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.doReturn;
 
@@ -151,7 +151,7 @@ public class ChangeEnvTest {
         Map<String, Object> map = null;
 
         // Act
-        Map<String, Object> result = changeEnv(map);
+        Map<String, Object> result = applyEnvironmentVariables(map);
 
         // Assert
         assertThat(result).isNull();
@@ -171,7 +171,7 @@ public class ChangeEnvTest {
                 .getEnvironments();
 
         // Act
-        Map<String, Object> result = changeEnv(map);
+        Map<String, Object> result = applyEnvironmentVariables(map);
         config.close();
 
         // Assert
@@ -194,7 +194,7 @@ public class ChangeEnvTest {
                 .getEnvironments();
 
         // Act
-        Map<String, Object> result = changeEnv(map);
+        Map<String, Object> result = applyEnvironmentVariables(map);
         config.close();
 
         // Assert
@@ -217,7 +217,7 @@ public class ChangeEnvTest {
                 .getEnvironments();
 
         // Act
-        Map<String, Object> result = changeEnv(map);
+        Map<String, Object> result = applyEnvironmentVariables(map);
         config.close();
 
         // Assert

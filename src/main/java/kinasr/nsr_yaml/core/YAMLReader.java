@@ -3,37 +3,12 @@ package kinasr.nsr_yaml.core;
 import kinasr.nsr_yaml.exception.InvalidKeyException;
 
 /**
- * Class YAMLReader
- * The YAMLReader class is used to read YAML data and convert it into usable objects.
- * <p>
- * Constructor
- * <p>
- * YAMLReader(Object yamlData, ObjMapper mapper)
- * Constructs a YAMLReader with the specified YAML data and Object Mapper.
- * <p>
- * Parameters:
- * <p>
- * yamlData - The YAML data to be read.
- * mapper - The Object Mapper used to convert the YAML data.
- * <p>
- * Methods
- * <p>
- * YAMLObj get(String key)
- * Returns a YAMLObj representing the value associated with the specified key in the YAML data.
- * Parameters:
- * key - The key associated with the desired value in the YAML data.
- * Returns:
- * A YAMLObj representing the value associated with the specified key in the YAML data.
- * Throws:
- * InvalidKeyException - if the specified key is null or empty.
- * <p>
- * YAMLObject get()
- * Returns a YAMLObject representation of the YAML data.
- * Returns:
- * A YAMLObject representation of the YAML data.
+ * Reads YAML data and converts it into usable objects.
+ * This class serves as a bridge between raw YAML data and the application's 
+ * domain objects by providing convenient access methods.
  */
 public class YAMLReader {
-    private final Object data;
+    private final Object yamlData;
     private final ObjMapper mapper;
 
     /**
@@ -43,7 +18,7 @@ public class YAMLReader {
      * @param mapper   The Object Mapper used to convert the YAML data.
      */
     protected YAMLReader(Object yamlData, ObjMapper mapper) {
-        this.data = yamlData;
+        this.yamlData = yamlData;
         this.mapper = mapper;
     }
 
@@ -55,10 +30,8 @@ public class YAMLReader {
      * @throws InvalidKeyException if the specified key is null or empty.
      */
     public YAMLObj get(String key) {
-        if (key == null || key.isEmpty())
-            throw new InvalidKeyException("Key can't be null or empty");
-
-        return new YAMLObj(mapper.get(data, key));
+        validateKey(key);
+        return new YAMLObj(mapper.get(yamlData, key));
     }
 
     /**
@@ -67,6 +40,28 @@ public class YAMLReader {
      * @return A YAMLObject representation of the YAML data.
      */
     public YAMLObject get() {
-        return new YAMLObject(data);
+        return new YAMLObject(yamlData);
+    }
+    
+    /**
+     * Validates that the key is not null or empty.
+     * 
+     * @param key The key to validate
+     * @throws InvalidKeyException if the key is null or empty
+     */
+    private void validateKey(String key) {
+        if (isNullOrEmpty(key)) {
+            throw new InvalidKeyException("Key can't be null or empty");
+        }
+    }
+    
+    /**
+     * Checks if a string is null or empty.
+     * 
+     * @param str The string to check
+     * @return true if the string is null or empty, false otherwise
+     */
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.isEmpty();
     }
 }
