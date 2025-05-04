@@ -1,22 +1,11 @@
 package kinasr.nsr_yaml.core;
-
 import kinasr.nsr_yaml.exception.ParsingException;
-
 import java.util.List;
 import java.util.Map;
 
 /**
- * Class YAMLObject
- * The YAMLObject class provides a convenient way to access and manipulate data stored in YAML format.
- * It contains various methods to convert the stored data into different data structures like Object, String, List, Map, etc.
- * <p>
- * Fields
- * <p>
- * data: final Object - Represents the data stored in the YAMLObject.
- * <p>
- * Constructor
- * <p>
- * YAMLObject(Object data) - Creates a new YAMLObject with the specified data.
+ * Represents a YAMLObject that encapsulates a data value. 
+ * Provides various methods to interpret the encapsulated data in different formats.
  */
 public class YAMLObject {
     private final Object data;
@@ -111,16 +100,29 @@ public class YAMLObject {
      *                          if it is a Record, or if it is an Array of unsupported components.
      */
     private <T> void validateClazz(Class<T> clazz) {
-        var errorMsg = "";
-        if (clazz.isInterface() && !clazz.isAssignableFrom(List.class) &&
-                !clazz.isAssignableFrom(Map.class))
-            errorMsg = "Interfaces can not be initialized";
-        else if (clazz.isRecord())
-            errorMsg = "Records are not supported";
-        else if (clazz.isArray())
+        if (isUnsupportedInterface(clazz)) {
+            throw new ParsingException("Interfaces can not be initialized");
+        }
+        
+        if (clazz.isRecord()) {
+            throw new ParsingException("Records are not supported");
+        }
+        
+        if (clazz.isArray()) {
             validateClazz(clazz.getComponentType());
-
-        if (!errorMsg.isEmpty())
-            throw new ParsingException(errorMsg);
+        }
+    }
+    
+    /**
+     * Checks if the given class is an interface that is not supported for conversion.
+     * 
+     * @param clazz The class to check
+     * @param <T> The type of the class
+     * @return true if the class is an unsupported interface, false otherwise
+     */
+    private <T> boolean isUnsupportedInterface(Class<T> clazz) {
+        return clazz.isInterface() && 
+               !clazz.isAssignableFrom(List.class) && 
+               !clazz.isAssignableFrom(Map.class);
     }
 }

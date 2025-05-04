@@ -8,40 +8,23 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * <body>
- * <h1>ConfigHandler</h1>
- * <p>The ConfigHandler is a singleton class that handles the configurations of an application by reading the data from the YAML files.</p>
- * <br/>
- * <h2>Constructors</h2>
- * <ul>
- * <li><code>private ConfigHandler()</code> A private constructor that sets the reader to a new instance of YAMLReader if a config file exists, otherwise sets the reader to null.</li>
- * </ul>
- * <body/>
+ * A singleton class that handles the configurations by reading data from YAML files.
  */
 class ConfigHandler {
     private static ConfigHandler instance;
     private final YAMLReader reader;
     private final ConfigRecord<String> dateConfigDatePattern = new ConfigRecord<>("date-config.date-pattern");
     private final ConfigRecord<String> dateConfigTimePattern = new ConfigRecord<>("date-config.time-pattern");
-    private final ConfigRecord<String> dateConfigDateTimePattern =
-            new ConfigRecord<>("date-config.date-time-pattern");
-    private final ConfigRecord<String> dateConfigZonedPattern =
-            new ConfigRecord<>("date-config.zoned-date-time-pattern");
+    private final ConfigRecord<String> dateConfigDateTimePattern = new ConfigRecord<>("date-config.date-time-pattern");
+    private final ConfigRecord<String> dateConfigZonedPattern = new ConfigRecord<>("date-config.zoned-date-time-pattern");
     private final ConfigRecord<List<String>> environments = new ConfigRecord<>("environments");
 
     /**
      * Constructor for ConfigHandler class.
-     * <p>
-     * Initializes the reader field with a YAMLReader instance.
      */
     private ConfigHandler() {
-        var file = findFileName();
-        YAMLReader r = null;
-
-        if (file != null)
-            r = YAML.read(file, false);
-
-        this.reader = r;
+        var file = findConfigFile();
+        this.reader = file != null ? YAML.read(file, false) : null;
     }
 
     /**
@@ -50,16 +33,14 @@ class ConfigHandler {
      * @return ConfigHandler The singleton instance of the ConfigHandler class.
      */
     protected static ConfigHandler getInstance() {
-        if (instance == null)
+        if (instance == null) {
             instance = new ConfigHandler();
+        }
         return instance;
     }
 
     /**
      * Returns the date pattern string for the date configuration.
-     *
-     * @return Optional<String> The date pattern string for the date configuration,
-     * or an empty Optional if the value is not present.
      */
     protected Optional<String> getDateConfigDatePattern() {
         return fetchData(dateConfigDatePattern, key -> reader.get(key).asString());
@@ -67,9 +48,6 @@ class ConfigHandler {
 
     /**
      * Returns the time pattern string for the date configuration.
-     *
-     * @return Optional<String> The time pattern string for the date configuration,
-     * or an empty Optional if the value is not present.
      */
     protected Optional<String> getDateConfigTimePattern() {
         return fetchData(dateConfigTimePattern, key -> reader.get(key).asString());
@@ -77,9 +55,6 @@ class ConfigHandler {
 
     /**
      * Returns the date and time pattern string for the date configuration.
-     *
-     * @return Optional<String> The date and time pattern string for the date
-     * configuration, or an empty Optional if the value is not present.
      */
     protected Optional<String> getDateConfigDateTimePattern() {
         return fetchData(dateConfigDateTimePattern, key -> reader.get(key).asString());
@@ -87,9 +62,6 @@ class ConfigHandler {
 
     /**
      * Returns the zoned date and time pattern string for the date configuration.
-     *
-     * @return Optional<String> The zoned date and time pattern string for the date
-     * configuration, or an empty Optional if the value is not present.
      */
     protected Optional<String> getDateConfigZonedPattern() {
         return fetchData(dateConfigZonedPattern, key -> reader.get(key).asString());
@@ -97,9 +69,6 @@ class ConfigHandler {
 
     /**
      * Returns the list of environments.
-     *
-     * @return Optional<List < String>> The list of environments, or an empty Optional
-     * if the value is not present.
      */
     protected Optional<List<String>> getEnvironments() {
         var propertyEnv = System.getProperty(Helper.NSR_ENV);
@@ -113,57 +82,49 @@ class ConfigHandler {
 
         return Optional.of(envInConfig);
     }
-
+    
     /**
      * Searches for the configuration file in the specified root path using possible file names.
-     *
-     * @return String The path to the configuration file if it is found, otherwise null.
      */
-    String findFileName() {
+    private String findConfigFile() {
         var rootPath = "src/main/resources/";
         var possibleNames = List.of("nsr_config.yaml", "nsr_config.yml", "config.yaml", "config.yml");
 
         for (String name : possibleNames) {
             var filePath = rootPath + name;
-            if (Helper.isFileExist(filePath) != null)
+            if (Helper.validateFilePath(filePath) != null) {
                 return filePath;
+            }
         }
 
         return null;
     }
-
+    
     /**
      * Attempts to fetch data for the specified configuration key, using the provided function
      * to read the value.
-     *
-     * @param config The configuration record to fetch.
-     * @param read   The function to read the value of the key.
-     * @param <T>    type
-     * @return Optional<T> The value of the key, or an empty Optional if the value is not present.
      */
     <T> Optional<T> fetchData(ConfigRecord<T> config, Function<String, T> read) {
-        if (reader != null && !config.isFetched)
+        if (reader != null && !config.isFetched) {
             try {
                 config.value = read.apply(config.key);
             } catch (InvalidKeyException ignore) {
-                // Ignore if the key is not exist
+                // Ignore if the key does not exist
             } finally {
                 config.isFetched = true;
             }
+        }
 
         return Optional.ofNullable(config.value);
     }
 
+
     /**
-     * ConfigRecord
-     * <p>
      * A utility class that keeps track of the configuration keys and their values.
-     *
-     * @param <T> The type of the configuration value.
      */
     static class ConfigRecord<T> {
         private final String key;
-        private Boolean isFetched = false;
+        private boolean isFetched = false;
         private T value;
 
         private ConfigRecord(String key) {
